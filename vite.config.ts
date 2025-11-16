@@ -10,6 +10,17 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'recharts': ['recharts'],
+            'google-genai': ['@google/genai'],
+          }
+        }
+      }
+    },
     define: {
       // Vercel provides the API_KEY as an environment variable.
       // This makes it available to the client-side code.
