@@ -167,7 +167,7 @@ const AffiliateProgram: React.FC = () => {
                         <label className={`block text-sm font-medium text-dark-text-secondary mb-2 ${textAlignmentClass}`}>{t('affiliate_program.your_referral_link')}</label>
                          <div className="flex rounded-md shadow-sm">
                             <input type="text" readOnly value={referralLink} className={`flex-1 min-w-0 block w-full px-3 py-2 rounded-none bg-dark-input border border-dark-border text-dark-text-secondary font-mono ${dir === 'rtl' ? 'rounded-r-md' : 'rounded-l-md'}`} />
-                            <Button onClick={handleCopyLink} className={`!rounded-l-none !rounded-r-md ${dir === 'rtl' ? '!rounded-r-none !rounded-l-md'}`} icon={<i className="fa-solid fa-copy"></i>}>
+                            <Button onClick={handleCopyLink} className={dir === 'rtl' ? '!rounded-r-none !rounded-l-md' : '!rounded-l-none !rounded-r-md'} icon={<i className="fa-solid fa-copy"></i>}>
                                 {t('affiliate_program.copy_link_button')}
                             </Button>
                          </div>
