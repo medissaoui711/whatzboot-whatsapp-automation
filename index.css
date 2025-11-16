@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  [lang="ar"] body, [lang="ar"] button, [lang="ar"] input, [lang="ar"] textarea, [lang="ar"] select {
+    font-family: 'Tajawal', sans-serif;
+  }
+}
