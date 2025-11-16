@@ -6,7 +6,7 @@ import { Conversation, Contact, User, ChatMessage, ConversationStatus } from '..
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
-import { initialContacts } from './ContactManager';
+import { initialContacts } from '../data/mockData';
 
 // Mock Data
 const initialTeam: User[] = [

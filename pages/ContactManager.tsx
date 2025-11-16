@@ -8,13 +8,7 @@ import { SkeletonTable } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
-
-// FIX: Export initialContacts to be used in other components like GlobalSearchModal.
-export const initialContacts: Contact[] = [
-  { id: '1', name: 'John Doe', phone: '+1234567890', tags: ['Lead', 'VIP'] },
-  { id: '2', name: 'Jane Smith', phone: '+1987654321', tags: ['Customer'] },
-  { id: '3', name: 'Peter Jones', phone: '+1122334455', tags: ['Follow-up', 'Lead'] },
-];
+import { initialContacts } from '../data/mockData';
 
 const ITEMS_PER_PAGE = 10;
 

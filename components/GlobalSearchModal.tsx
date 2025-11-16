@@ -6,9 +6,7 @@ import { categorizeSearchQuery } from '../services/geminiService';
 import { GlobalSearchResults, GlobalSearchResultItem } from '../types';
 
 // Mock data imports for client-side search demonstration
-import { initialBots } from '../pages/AutoResponder';
-import { initialContacts } from '../pages/ContactManager';
-import { initialPerformance } from '../pages/Analytics';
+import { initialBots, initialContacts, initialPerformance } from '../data/mockData';
 import Button from './ui/Button';
 
 interface GlobalSearchModalProps {
