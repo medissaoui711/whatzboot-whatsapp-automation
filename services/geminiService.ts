@@ -1,19 +1,37 @@
 
-
 // FIX: Import GoogleGenAI and GenerateContentResponse from @google/genai as per guidelines.
 import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
 import { CampaignPerformance } from "../types";
 
-// FIX: Initialize the GoogleGenAI client with the API key from environment variables.
-// This is updated to use process.env.API_KEY as per the guidelines.
-// FIX: Use process.env.API_KEY instead of import.meta.env.VITE_API_KEY to align with the coding guidelines and resolve the TypeScript error.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// A singleton instance of the GoogleGenAI client.
+// It will be initialized only when it's first needed.
+let aiInstance: GoogleGenAI | null = null;
+
+/**
+ * Initializes and returns the GoogleGenAI client instance.
+ * Throws an error if the API key is not configured.
+ * This prevents the entire application from crashing on startup if the key is missing.
+ */
+const getAiClient = (): GoogleGenAI => {
+    if (!aiInstance) {
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) {
+            console.error("Gemini API key is not configured. Please set the API_KEY environment variable.");
+            throw new Error("Gemini API key is not configured.");
+        }
+        aiInstance = new GoogleGenAI({ apiKey });
+    }
+    return aiInstance;
+};
+
+// All exported functions will now call getAiClient() to ensure the client is initialized.
+// They will also include a try-catch block to handle initialization failures gracefully.
 
 export const generateSmartReply = async (prompt: string): Promise<string> => {
   console.log(`Generating smart reply for prompt: "${prompt}"`);
 
-  // FIX: Replace the mock implementation with a real API call to the Gemini model.
   try {
+    const ai = getAiClient();
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: `Generate a polite and professional WhatsApp response for the following query: "${prompt}"`,
@@ -22,6 +40,9 @@ export const generateSmartReply = async (prompt: string): Promise<string> => {
     return response.text;
   } catch (error) {
     console.error("Error generating content with Gemini:", error);
+    if (error instanceof Error && error.message.includes("API key is not configured")) {
+        return "AI features are currently unavailable. Please contact support.";
+    }
     return "Sorry, I couldn't generate a response right now.";
   }
 };
@@ -38,6 +59,7 @@ export const analyzeCampaignData = async (data: CampaignPerformance[]): Promise<
   `;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro', // Using a more powerful model for analysis
         contents: prompt,
@@ -45,7 +67,7 @@ export const analyzeCampaignData = async (data: CampaignPerformance[]): Promise<
     return response.text;
   } catch (error) {
     console.error("Error analyzing campaign data with Gemini:", error);
-    throw new Error("Failed to analyze campaign data.");
+    throw new Error("Failed to analyze campaign data. Please check configuration.");
   }
 };
 
@@ -58,6 +80,7 @@ export const generateBroadcastMessage = async (prompt: string): Promise<string> 
     Goal: "${prompt}"
   `;
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: fullPrompt,
@@ -65,7 +88,7 @@ export const generateBroadcastMessage = async (prompt: string): Promise<string> 
     return response.text;
   } catch (error) {
     console.error("Error generating broadcast message with Gemini:", error);
-    throw new Error("Failed to generate message.");
+    throw new Error("Failed to generate message. Please check configuration.");
   }
 };
 
@@ -80,6 +103,7 @@ export const categorizeSearchQuery = async (query: string): Promise<{ category: 
   `;
 
   try {
+     const ai = getAiClient();
      const response = await ai.models.generateContent({
        model: "gemini-2.5-flash",
        contents: prompt,
