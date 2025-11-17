@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   // The relative path `'.'` correctly points to the project root where .env files are located.
   const env = loadEnv(mode, '.', '');
   return {
+    base: './',
     plugins: [react()],
     build: {
       rollupOptions: {
