@@ -15,17 +15,25 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
-            // Group all node_modules into vendor chunks.
-            // This prevents large vendor libraries from being bundled with application code.
+            // Further split vendor code to reduce large chunk sizes
             if (id.includes('node_modules')) {
-              // Create a separate, large chunk for recharts to isolate it.
+              // Isolate the largest dependencies into their own chunks
               if (id.includes('recharts')) {
                 return 'vendor-recharts';
               }
-              // All other vendors go into a core vendor bundle.
-              return 'vendor-core';
+              if (id.includes('react-router-dom') || id.includes('react-router')) {
+                return 'vendor-router';
+              }
+              if (id.includes('react-dom')) {
+                return 'vendor-react-dom';
+              }
+              if (id.includes('react')) {
+                return 'vendor-react';
+              }
+              // Group other smaller libraries together
+              return 'vendor-other';
             }
-            // Group common UI components into a separate chunk as they are used across many pages.
+            // Group common UI components into a separate chunk
             if (id.includes('components/ui')) {
                 return 'ui-kit';
             }
