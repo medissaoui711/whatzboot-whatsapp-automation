@@ -6,18 +6,13 @@ import { Conversation, Contact, User, ChatMessage, ConversationStatus } from '..
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
+import { initialContacts } from '../data/contacts.data';
 
 // Mock Data
 const initialTeam: User[] = [
   { id: '1', name: 'Admin User', email: 'admin@whatzboot.com', role: 'Admin', avatar: 'https://picsum.photos/seed/admin/100' },
   { id: '2', name: 'Marketing Molly', email: 'molly@example.com', role: 'Marketer', avatar: 'https://picsum.photos/seed/molly/100' },
   { id: '3', name: 'Support Steve', email: 'steve@example.com', role: 'Agent', avatar: 'https://picsum.photos/seed/steve/100' },
-];
-
-const initialContacts: Contact[] = [
-  { id: '1', name: 'John Doe', phone: '+1234567890', tags: ['Lead', 'VIP'] },
-  { id: '2', name: 'Jane Smith', phone: '+1987654321', tags: ['Customer'] },
-  { id: '3', name: 'Peter Jones', phone: '+1122334455', tags: ['Follow-up', 'Lead'] },
 ];
 
 const initialConversations: Conversation[] = [

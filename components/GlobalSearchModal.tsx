@@ -3,32 +3,7 @@ import { Link } from 'react-router-dom';
 import Card from './ui/Card';
 import { useLanguage } from '../i18n/LanguageContext';
 import { categorizeSearchQuery } from '../services/geminiService';
-import { GlobalSearchResults, GlobalSearchResultItem, AutoResponderBot, Contact, CampaignPerformance } from '../types';
-
-// --- Data Co-location to resolve Vite build warnings ---
-// By defining the mock data here, we break the module dependency
-// between this component (part of the main bundle) and the lazy-loaded pages.
-
-const initialBots: AutoResponderBot[] = [
-  { id: '1', name: 'Welcome Bot', trigger: 'hello, hi', response: 'Welcome to our service! How can I help you?', status: 'active', lastTriggered: '2 hours ago' },
-  { id: '2', name: 'Support Hours Bot', trigger: 'hours, support time', response: 'Our support hours are 9 AM to 5 PM, Mon-Fri.', status: 'active', lastTriggered: '1 day ago' },
-  { id: '3', name: 'Pricing Bot', trigger: 'price, pricing', response: 'You can find our pricing details at ourwebsite.com/pricing.', status: 'inactive', lastTriggered: '1 week ago' },
-];
-
-const initialContacts: Contact[] = [
-  { id: '1', name: 'John Doe', phone: '+1234567890', tags: ['Lead', 'VIP'] },
-  { id: '2', name: 'Jane Smith', phone: '+1987654321', tags: ['Customer'] },
-  { id: '3', name: 'Peter Jones', phone: '+1122334455', tags: ['Follow-up', 'Lead'] },
-];
-
-const initialPerformance: CampaignPerformance[] = [
-    { id: '1', name: 'Q4 Holiday Sale', sentDate: '2023-12-15', recipients: 1250, deliveryRate: 99.1, readRate: 82.5, replyRate: 20.3 },
-    { id: '2', name: 'Black Friday Preview', sentDate: '2023-11-20', recipients: 1100, deliveryRate: 98.7, readRate: 78.1, replyRate: 18.5 },
-    { id: '3', name: 'New Product Launch', sentDate: '2023-11-05', recipients: 950, deliveryRate: 97.5, readRate: 65.4, replyRate: 12.1 },
-    { id: '4', name: 'October Newsletter', sentDate: '2023-10-28', recipients: 890, deliveryRate: 99.5, readRate: 71.9, replyRate: 10.5 },
-    { id: '5', name: 'Customer Feedback Request', sentDate: '2023-10-10', recipients: 850, deliveryRate: 96.0, readRate: 70.1, replyRate: 22.4 },
-];
-
+import { GlobalSearchResults, GlobalSearchResultItem } from '../types';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -49,12 +24,18 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose, 
 
   const performSearch = async (currentQuery: string) => {
     setIsSearching(true);
+    setResults({ contacts: [], bots: [], campaigns: [] }); // Clear previous results
+
     try {
       const { category, searchTerm } = await categorizeSearchQuery(currentQuery);
       
+      const lowerSearchTerm = searchTerm.toLowerCase();
       let searchResults: GlobalSearchResults = { contacts: [], bots: [], campaigns: [] };
 
-      const lowerSearchTerm = searchTerm.toLowerCase();
+      // Dynamically import data modules to break static dependency
+      const { initialContacts } = await import('../data/contacts.data');
+      const { initialBots } = await import('../data/bots.data');
+      const { initialPerformance } = await import('../data/performance.data');
 
       // Search Contacts
       if (category === 'contacts' || category === 'general') {
@@ -80,13 +61,7 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose, 
       setResults(searchResults);
     } catch (error) {
       console.error("Failed to perform global search:", error);
-      // Fallback to a simple general search
-      setResults({
-        contacts: initialContacts
-            .filter(c => c.name.toLowerCase().includes(currentQuery.toLowerCase()))
-            .map(c => ({ id: c.id, title: c.name, description: c.phone, path: '/contact-manager' })),
-        bots: [], campaigns: []
-      });
+      // You could add a user-facing error message here using a toast notification
     } finally {
       setIsSearching(false);
     }
