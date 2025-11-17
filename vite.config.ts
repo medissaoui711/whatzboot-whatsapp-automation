@@ -14,29 +14,9 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            // Further split vendor code to reduce large chunk sizes
-            if (id.includes('node_modules')) {
-              // Isolate the largest dependencies into their own chunks
-              if (id.includes('recharts')) {
-                return 'vendor-recharts';
-              }
-              if (id.includes('react-router-dom') || id.includes('react-router')) {
-                return 'vendor-router';
-              }
-              if (id.includes('react-dom')) {
-                return 'vendor-react-dom';
-              }
-              if (id.includes('react')) {
-                return 'vendor-react';
-              }
-              // Group other smaller libraries together
-              return 'vendor-other';
-            }
-            // Group common UI components into a separate chunk
-            if (id.includes('components/ui')) {
-                return 'ui-kit';
-            }
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'recharts': ['recharts'],
           }
         }
       }
