@@ -16,13 +16,16 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["."],
-  "exclude": [
-    "node_modules", 
-    "dist",
-    "vite.config.ts",
-    "tailwind.config.js",
-    "postcss.config.js"
+  "include": [
+    "components",
+    "data",
+    "i18n",
+    "pages",
+    "services",
+    "App.tsx",
+    "index.tsx",
+    "types.ts",
+    "constants.tsx"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
