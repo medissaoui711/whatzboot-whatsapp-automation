@@ -10,7 +10,7 @@ import Button from '../components/ui/Button';
 import Pagination from '../components/ui/Pagination';
 import { analyzeCampaignData } from '../services/geminiService';
 import { useToast } from '../components/contexts/ToastContext';
-import { initialPerformance } from '../data/mockData';
+import { initialPerformance } from '../data/performance.data';
 
 const initialAnalytics: CampaignAnalytics = {
     totalCampaigns: 12,

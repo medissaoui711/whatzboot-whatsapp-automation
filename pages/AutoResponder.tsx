@@ -9,7 +9,7 @@ import { SkeletonTable } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
-import { initialBots } from '../data/mockData';
+import { initialBots } from '../data/bots.data';
 
 const ITEMS_PER_PAGE = 10;
 
