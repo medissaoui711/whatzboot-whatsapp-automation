@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useUser } from './contexts/UserContext';
-import { Role } from '../types';
+import { useSiteSettings } from './contexts/SiteSettingsContext';
+import { ALL_NAV_ITEMS } from '../data/nav.data';
+
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -11,22 +13,24 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen }) => {
   const { t, dir, language, setLanguage } = useLanguage();
   const { user } = useUser();
+  const { settings } = useSiteSettings();
 
-  const ALL_NAV_ITEMS = [
-    { name: t('nav.dashboard'), path: '/dashboard', icon: <i className="fa-solid fa-tachometer-alt"></i>, roles: ['Admin', 'Marketer', 'Agent'] },
-    { name: t('nav.team_inbox'), path: '/team-inbox', icon: <i className="fa-solid fa-inbox"></i>, roles: ['Admin', 'Agent'] },
-    { name: t('nav.automations'), path: '/automations', icon: <i className="fa-solid fa-gears"></i>, roles: ['Admin', 'Marketer'] },
-    { name: t('nav.auto_responder'), path: '/auto-responder', icon: <i className="fa-solid fa-robot"></i>, roles: ['Admin', 'Marketer', 'Agent'] },
-    { name: t('nav.broadcaster'), path: '/broadcaster', icon: <i className="fa-solid fa-bullhorn"></i>, roles: ['Admin', 'Marketer'] },
-    { name: t('nav.template_manager'), path: '/templates', icon: <i className="fa-solid fa-layer-group"></i>, roles: ['Admin', 'Marketer'] },
-    { name: t('nav.contact_manager'), path: '/contact-manager', icon: <i className="fa-solid fa-address-book"></i>, roles: ['Admin', 'Marketer'] },
-    { name: t('nav.group_manager'), path: '/group-manager', icon: <i className="fa-solid fa-users"></i>, roles: ['Admin', 'Marketer', 'Agent'] },
-    { name: t('nav.analytics'), path: '/analytics', icon: <i className="fa-solid fa-chart-line"></i>, roles: ['Admin', 'Marketer'] },
-    { name: t('nav.number_filter'), path: '/number-filter', icon: <i className="fa-solid fa-filter"></i>, roles: ['Admin'] },
-    { name: t('nav.settings'), path: '/settings', icon: <i className="fa-solid fa-cog"></i>, roles: ['Admin'] },
-  ];
+  const visibleNavItems = useMemo(() => {
+    if (!settings) return [];
+    const sectionMap = new Map(settings.sections.map(s => [s.path, s]));
 
-  const visibleNavItems = ALL_NAV_ITEMS.filter(item => user && item.roles.includes(user.role));
+    return ALL_NAV_ITEMS
+        .filter(item => {
+            const itemSettings = sectionMap.get(item.path);
+            return itemSettings?.visible && user && item.roles.includes(user.role);
+        })
+        .sort((a, b) => {
+            const orderA = sectionMap.get(a.path)?.order ?? 99;
+            const orderB = sectionMap.get(b.path)?.order ?? 99;
+            return orderA - orderB;
+        });
+  }, [settings, user]);
+
 
   const sidebarClasses = dir === 'rtl' 
     ? `fixed top-0 right-0 z-30 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`
@@ -48,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen }) => {
         <nav className={`mt-5 flex-grow overflow-y-auto overflow-x-hidden ${textAlignmentClass}`}>
           {visibleNavItems.map((item) => (
             <NavLink
-              key={item.name}
+              key={item.path}
               to={item.path}
               className={({ isActive }) =>
                 `flex items-center mt-4 py-3 px-6 text-dark-text-secondary transition-colors duration-300 transform hover:bg-white/5 hover:text-dark-text-primary ${
@@ -57,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen }) => {
               }
             >
               <span className="w-6 text-center text-lg flex-shrink-0">{item.icon}</span>
-              <span className="mx-4 whitespace-nowrap">{item.name}</span>
+              <span className="mx-4 whitespace-nowrap">{t(item.nameKey)}</span>
             </NavLink>
           ))}
         </nav>

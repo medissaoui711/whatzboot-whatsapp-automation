@@ -6,6 +6,7 @@ import { DashboardStats, MessageTrend } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 import Skeleton from '../components/ui/Skeleton';
 import WelcomeModal from '../components/WelcomeModal';
+import { useSiteSettings } from '../components/contexts/SiteSettingsContext';
 
 interface ToolCardProps {
   title: string;
@@ -37,6 +38,7 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(false);
   const { t } = useLanguage();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     setIsLoading(true);
@@ -93,8 +95,8 @@ const Dashboard: React.FC = () => {
     <div>
       {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
       
-      <h2 className="text-3xl font-semibold text-dark-text-primary">{t('dashboard.title')}</h2>
-      <p className="mt-2 text-dark-text-secondary">{t('dashboard.subtitle')}</p>
+      <h2 className="text-3xl font-semibold text-dark-text-primary">{settings ? t(settings.hero.titleKey) : t('dashboard.title')}</h2>
+      <p className="mt-2 text-dark-text-secondary">{settings ? t(settings.hero.subtitleKey) : t('dashboard.subtitle')}</p>
       
       <div className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (

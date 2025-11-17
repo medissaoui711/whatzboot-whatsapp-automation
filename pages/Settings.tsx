@@ -57,6 +57,18 @@ const Settings: React.FC = () => {
 
         {user?.role === 'Admin' && (
           <>
+            <Card>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h3 className="text-xl font-semibold text-dark-text-primary">{t('settings.site_management_title')}</h3>
+                        <p className="text-sm text-dark-text-secondary mt-1">{t('settings.site_management_subtitle')}</p>
+                    </div>
+                    <Link to="/admin/control-panel">
+                        <Button variant='secondary'>{t('settings.site_management_button')}</Button>
+                    </Link>
+                </div>
+            </Card>
+
              <Card>
               <div className="flex justify-between items-center">
                 <div>
@@ -121,7 +133,7 @@ const Settings: React.FC = () => {
         </Card>
         
         <div className="flex justify-end">
-            <Button>{t('settings.save_button')}</Button>
+            <Button>{t('common.save_button')}</Button>
         </div>
       </div>
     </div>

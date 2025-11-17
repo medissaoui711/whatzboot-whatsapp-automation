@@ -24,6 +24,7 @@ export const translations = {
       next: "Next",
       page_of: "Page {currentPage} of {totalPages}",
       view: "View",
+      save_button: "Save Changes",
     },
 
     confirmation: {
@@ -427,6 +428,22 @@ export const translations = {
         affiliate_subtitle: "Earn commissions by referring new users to WhatzBoot.",
         affiliate_button: "View Dashboard",
         save_button: "Save Changes",
+        site_management_title: "Site Management",
+        site_management_subtitle: "Customize homepage content and section layout.",
+        site_management_button: "Manage Site",
+    },
+    
+    // Admin Control Panel
+    control_panel: {
+      title: "Site Management",
+      subtitle: "Control the appearance and content of your main pages from here.",
+      hero_section_title: "Homepage Hero Section",
+      hero_title_label: "Hero Title (Translation Key)",
+      hero_subtitle_label: "Hero Subtitle (Translation Key)",
+      translation_key_note: "This is a key from the translation file (e.g., dashboard.title).",
+      sections_title: "Section Management",
+      reorder_tip: "Drag and drop to reorder sections in the sidebar.",
+      reset_button: "Reset to Default"
     },
     
     // Admin Monitoring Dashboard
@@ -897,6 +914,7 @@ export const translations = {
       next: "التالي",
       page_of: "صفحة {currentPage} من {totalPages}",
       view: "عرض",
+      save_button: "حفظ التغييرات",
     },
 
     confirmation: {
@@ -1279,6 +1297,21 @@ export const translations = {
       affiliate_subtitle: "اربح عمولات عن طريق دعوة مستخدمين جدد إلى واتزبوت.",
       affiliate_button: "عرض لوحة التحكم",
       save_button: "حفظ التغييرات",
+      site_management_title: "إدارة الموقع",
+      site_management_subtitle: "تخصيص محتوى الصفحة الرئيسية وتخطيط الأقسام.",
+      site_management_button: "إدارة الموقع",
+    },
+    
+    control_panel: {
+      title: "إدارة الموقع",
+      subtitle: "تحكم في مظهر ومحتوى صفحاتك الرئيسية من هنا.",
+      hero_section_title: "قسم الهيرو في الصفحة الرئيسية",
+      hero_title_label: "عنوان الهيرو (مفتاح الترجمة)",
+      hero_subtitle_label: "العنوان الفرعي للهيرو (مفتاح الترجمة)",
+      translation_key_note: "هذا مفتاح من ملف الترجمة (مثال: dashboard.title).",
+      sections_title: "إدارة الأقسام",
+      reorder_tip: "اسحب وأفلت لإعادة ترتيب الأقسام في الشريط الجانبي.",
+      reset_button: "إعادة تعيين إلى الافتراضي"
     },
 
     monitoring: {

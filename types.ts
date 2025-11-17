@@ -21,7 +21,7 @@ export interface AutoResponderBot {
 }
 
 export interface GroupMember {
-  id: string;
+  id:string;
   name: string;
   phone: string;
   joined: string;
@@ -195,4 +195,21 @@ export interface DripCampaign {
   triggerType: DripCampaignTriggerType;
   triggerValue: string; // e.g., the tag name
   steps: DripCampaignStep[];
+}
+
+// --- Site Management Types ---
+export interface HeroSettings {
+  titleKey: string;
+  subtitleKey: string;
+}
+
+export interface SectionSettings {
+  path: string;
+  visible: boolean;
+  order: number;
+}
+
+export interface SiteSettings {
+  hero: HeroSettings;
+  sections: SectionSettings[];
 }

@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-d
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { ToastProvider } from './components/contexts/ToastContext';
 import { UserProvider, useUser } from './components/contexts/UserContext';
+import { SiteSettingsProvider } from './components/contexts/SiteSettingsContext';
 
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -32,6 +33,7 @@ const Automations = lazy(() => import('./pages/Automations'));
 
 // Admin Pages
 const MonitoringDashboard = lazy(() => import('./pages/admin/MonitoringDashboard'));
+const ControlPanel = lazy(() => import('./pages/admin/ControlPanel'));
 
 
 // Lazy load all tool pages
@@ -120,6 +122,7 @@ function AppContent() {
 
                       {/* Admin-only Routes */}
                       <Route path="/admin/monitoring" element={<ProtectedRoute allowedRoles={['Admin']}><MonitoringDashboard /></ProtectedRoute>} />
+                      <Route path="/admin/control-panel" element={<ProtectedRoute allowedRoles={['Admin']}><ControlPanel /></ProtectedRoute>} />
                       
                       {/* Routes accessible to all logged-in users */}
                       <Route path="/help-center" element={<HelpCenter />} />
@@ -162,9 +165,11 @@ function App() {
     <LanguageProvider>
       <ToastProvider>
         <UserProvider>
-          <div className="bg-dark-bg min-h-screen font-sans">
-            <AppContent />
-          </div>
+          <SiteSettingsProvider>
+            <div className="bg-dark-bg min-h-screen font-sans">
+              <AppContent />
+            </div>
+          </SiteSettingsProvider>
         </UserProvider>
       </ToastProvider>
     </LanguageProvider>
