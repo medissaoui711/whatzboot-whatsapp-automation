@@ -20,7 +20,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4" onClick={onClose}>
-            <Card className="w-full max-w-md animate-toast-in-right" onClick={(e) => e.stopPropagation()}>
+            <Card className="w-full max-w-md animate-toast-in-right" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                 <div className="text-center">
                     <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-500/20">
                         <i className="fa-solid fa-triangle-exclamation text-2xl text-red-500"></i>

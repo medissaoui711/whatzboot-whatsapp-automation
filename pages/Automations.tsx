@@ -40,7 +40,7 @@ const defaultStep: DripCampaignStep = { id: '', delayDays: 1, delayHours: 0, tem
 const Automations: React.FC = () => {
     const { t, dir } = useLanguage();
     const { addToast } = useToast();
-    const [campaigns, setCampaigns] = useState<DripCampaign[]>(initialCampaigns);
+    const [campaigns] = useState<DripCampaign[]>(initialCampaigns);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCampaign, setEditingCampaign] = useState<DripCampaign | null>(null);
 
@@ -145,7 +145,7 @@ const Automations: React.FC = () => {
 
             {isModalOpen && editingCampaign && (
                 <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4">
-                    <Card className="w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                    <Card className="w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                         <h3 className="text-2xl font-semibold mb-6 text-dark-text-primary flex-shrink-0">
                             {editingCampaign.name ? t('automations.modal_title_edit') : t('automations.modal_title_create')}
                         </h3>

@@ -43,7 +43,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4">
-      <Card className="w-full max-w-lg animate-toast-in-right" onClick={(e) => e.stopPropagation()}>
+      <Card className="w-full max-w-lg animate-toast-in-right" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
           <div className="text-center">
             <i className="fa-solid fa-lightbulb-on text-4xl text-yellow-400 mb-3"></i>

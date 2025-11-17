@@ -103,7 +103,7 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose, 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-start p-4 pt-20" onClick={onClose}>
-      <Card className="w-full max-w-2xl animate-toast-in-right" onClick={(e) => e.stopPropagation()}>
+      <Card className="w-full max-w-2xl animate-toast-in-right" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
              <div>
                 <h2 className="text-xl font-bold text-dark-text-primary">{t('global_search.title')}</h2>
