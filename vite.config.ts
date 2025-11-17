@@ -14,12 +14,22 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'recharts': ['recharts'],
-          }
-        }
-      }
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              // Group all recharts-related modules into a single chunk
+              if (id.includes('recharts')) {
+                return 'recharts';
+              }
+              // Group all react-related modules into a single chunk
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+                return 'react-vendor';
+              }
+              // Group all other vendor modules into a separate chunk
+              return 'vendor';
+            }
+          },
+        },
+      },
     },
     define: {
       // Vercel provides the API_KEY as an environment variable.
