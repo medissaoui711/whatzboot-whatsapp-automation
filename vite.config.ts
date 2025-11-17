@@ -14,10 +14,21 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'recharts': ['recharts'],
-            'google-genai': ['@google/genai'],
+          manualChunks(id) {
+            // Group all node_modules into vendor chunks.
+            // This prevents large vendor libraries from being bundled with application code.
+            if (id.includes('node_modules')) {
+              // Create a separate, large chunk for recharts to isolate it.
+              if (id.includes('recharts')) {
+                return 'vendor-recharts';
+              }
+              // All other vendors go into a core vendor bundle.
+              return 'vendor-core';
+            }
+            // Group common UI components into a separate chunk as they are used across many pages.
+            if (id.includes('components/ui')) {
+                return 'ui-kit';
+            }
           }
         }
       }
