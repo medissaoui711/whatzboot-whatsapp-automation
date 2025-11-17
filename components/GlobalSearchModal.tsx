@@ -4,11 +4,6 @@ import Card from './ui/Card';
 import { useLanguage } from '../i18n/LanguageContext';
 import { categorizeSearchQuery } from '../services/geminiService';
 import { GlobalSearchResults, GlobalSearchResultItem } from '../types';
-
-// Mock data imports for client-side search demonstration
-import { initialBots } from '../data/bots.data';
-import { initialContacts } from '../data/contacts.data';
-import { initialPerformance } from '../data/performance.data';
 import Button from './ui/Button';
 
 interface GlobalSearchModalProps {
@@ -31,6 +26,16 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose, 
   const performSearch = async (currentQuery: string) => {
     setIsSearching(true);
     try {
+        const [
+            { initialContacts },
+            { initialBots },
+            { initialPerformance }
+        ] = await Promise.all([
+            import('../data/contacts.data'),
+            import('../data/bots.data'),
+            import('../data/performance.data')
+        ]);
+
         const { category, searchTerm } = await categorizeSearchQuery(currentQuery);
         
         let searchResults: GlobalSearchResults = { contacts: [], bots: [], campaigns: [] };
@@ -63,6 +68,7 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose, 
     } catch (error) {
       console.error("Failed to perform global search:", error);
       // Fallback to a simple general search
+      const { initialContacts } = await import('../data/contacts.data');
       setResults({
         contacts: initialContacts
             .filter(c => c.name.toLowerCase().includes(currentQuery.toLowerCase()))
