@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- 
+      WhatzBoot Logo - Primary Version
+      Concept: A friendly robot inside a chat bubble, symbolizing chat automation.
+      Designed for use on light backgrounds.
+    -->
+    <title>WhatzBoot Logo</title>
+    <!-- Chat bubble background -->
+    <path d="M10,20 C10,14.477 14.477,10 20,10 L80,10 C85.523,10 90,14.477 90,20 L90,60 C90,65.523 85.523,70 80,70 L35,70 L20,85 L20,70 L20,70 C14.477,70 10,65.523 10,60 L10,20 Z" fill="#16A34A"/>
+    
+    <!-- Robot Head -->
+    <rect x="35" y="30" width="30" height="20" rx="5" fill="white"/>
+    
+    <!-- Robot Eyes -->
+    <circle cx="45" cy="40" r="3.5" fill="#16A34A"/>
+    <circle cx="55" cy="40" r="3.5" fill="#16A34A"/>
+    
+    <!-- Robot Antenna -->
+    <line x1="50" y1="30" x2="50" y2="22" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="20" r="2.5" fill="white"/>
+</svg>

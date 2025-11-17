@@ -9,6 +9,8 @@ import { SiteSettingsProvider } from './components/contexts/SiteSettingsContext'
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Home from './pages/Home'; // Import Home directly for initial load performance
+import PublicHeader from './components/PublicHeader';
+import Footer from './components/Footer';
 import { Role } from './types';
 
 // --- Performance Optimization: Code Splitting with React.lazy ---
@@ -64,7 +66,7 @@ const FullScreenLoader: React.FC = () => (
   </div>
 );
 
-const InfoPage: React.FC = () => {
+const InfoPageContent: React.FC = () => {
   const location = useLocation();
   const { t } = useLanguage();
   const pageSlug = location.pathname.substring(1);
@@ -79,6 +81,21 @@ const InfoPage: React.FC = () => {
     </div>
   );
 };
+
+const PublicInfoPage: React.FC = () => {
+  return (
+    <div className="flex flex-col min-h-screen bg-dark-bg">
+      <PublicHeader />
+      <main className="flex-grow">
+        <div className="container mx-auto px-6 py-12 animate-fade-in-up">
+          <InfoPageContent />
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 
 const ProtectedRoute: React.FC<{ children: ReactNode; allowedRoles: Role[] }> = ({ children, allowedRoles }) => {
     const { user } = useUser();
@@ -105,6 +122,11 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" replace />} />
+
+      {/* New Public Info Pages */}
+      {infoPagePaths.map(path => (
+          <Route key={path} path={path} element={<PublicInfoPage />} />
+      ))}
       
       {/* Protected Application Routes */}
       <Route 
@@ -143,11 +165,6 @@ function AppRoutes() {
                   <Route path="/help-center" element={<HelpCenter />} />
                   <Route path="/affiliate-program" element={<AffiliateProgram />} />
                   <Route path="/tools" element={<Tools />} />
-
-                  
-                  {infoPagePaths.map(path => (
-                      <Route key={path} path={path} element={<InfoPage />} />
-                  ))}
                   
                   {/* Allow all roles to access tools for now, can be restricted later */}
                   <Route path="/tools/google-maps-extractor" element={<GoogleMapsExtractor />} />
