@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Role } from '../types';
 
@@ -9,7 +10,6 @@ export interface NavItem {
 }
 
 export const ALL_NAV_ITEMS: NavItem[] = [
-    // FIX: Replaced JSX syntax with React.createElement to resolve parsing errors in a .ts file.
     { nameKey: 'nav.dashboard', path: '/dashboard', icon: React.createElement('i', { className: 'fa-solid fa-tachometer-alt' }), roles: ['Admin', 'Marketer', 'Agent'] },
     { nameKey: 'nav.team_inbox', path: '/team-inbox', icon: React.createElement('i', { className: 'fa-solid fa-inbox' }), roles: ['Admin', 'Agent'] },
     { nameKey: 'nav.automations', path: '/automations', icon: React.createElement('i', { className: 'fa-solid fa-gears' }), roles: ['Admin', 'Marketer'] },

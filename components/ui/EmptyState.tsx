@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface EmptyStateProps {
@@ -20,4 +21,4 @@ const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, message, action })
   );
 };
 
-export default EmptyState;
+export default React.memo(EmptyState);

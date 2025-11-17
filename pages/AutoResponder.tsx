@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { AutoResponderBot } from '../types';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -10,6 +11,7 @@ import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
 import { initialBots } from '../data/bots.data';
+import { useModalAccessibility } from '../hooks/useModalAccessibility';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -27,6 +29,8 @@ const AutoResponder: React.FC = () => {
 
   const { t, dir } = useLanguage();
   const { addToast } = useToast();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useModalAccessibility(isModalOpen, () => setIsModalOpen(false), modalRef);
 
   useEffect(() => {
     setIsLoading(true);
@@ -169,8 +173,8 @@ const AutoResponder: React.FC = () => {
                 </td>
                 <td className="p-4 text-dark-text-secondary">{bot.lastTriggered}</td>
                 <td className="p-4">
-                  <button className="text-dark-text-secondary hover:text-whatsapp-green me-4"><i className="fa-solid fa-pencil"></i></button>
-                  <button onClick={() => handleDeleteClick(bot.id)} className="text-dark-text-secondary hover:text-red-500"><i className="fa-solid fa-trash"></i></button>
+                  <button aria-label={t('aria.edit', { item: bot.name })} className="text-dark-text-secondary hover:text-whatsapp-green me-4"><i className="fa-solid fa-pencil"></i></button>
+                  <button onClick={() => handleDeleteClick(bot.id)} aria-label={t('aria.delete', { item: bot.name })} className="text-dark-text-secondary hover:text-red-500"><i className="fa-solid fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -223,8 +227,8 @@ const AutoResponder: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center">
-          <Card className="w-full max-w-lg">
-            <h3 className="text-2xl font-semibold mb-4 text-dark-text-primary">{t('auto_responder.modal_title')}</h3>
+          <Card ref={modalRef} className="w-full max-w-lg" role="dialog" aria-modal="true" aria-labelledby="bot-modal-title">
+            <h3 id="bot-modal-title" className="text-2xl font-semibold mb-4 text-dark-text-primary">{t('auto_responder.modal_title')}</h3>
             <div className="space-y-4">
                 <div>
                     <input id="name" type="text" value={newBotData.name} onChange={handleInputChange} placeholder={t('auto_responder.modal_name_placeholder')} className={`w-full p-2 bg-dark-input border ${errors.name ? 'border-red-500' : 'border-dark-border'} rounded-lg text-dark-text-primary placeholder:text-dark-text-secondary ${textAlignmentClass}`}/>

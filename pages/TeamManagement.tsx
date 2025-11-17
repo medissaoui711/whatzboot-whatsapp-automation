@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { User, Role } from '../types';
 import Card from '../components/ui/Card';
@@ -7,16 +8,13 @@ import { useToast } from '../components/contexts/ToastContext';
 import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
-
-const initialTeam: User[] = [
-  { id: '2', name: 'Marketing Molly', email: 'molly@example.com', role: 'Marketer', avatar: 'https://picsum.photos/seed/molly/100' },
-  { id: '3', name: 'Support Steve', email: 'steve@example.com', role: 'Agent', avatar: 'https://picsum.photos/seed/steve/100' },
-];
+import { initialTeam } from '../data/team.data';
 
 const ITEMS_PER_PAGE = 10;
 
 const TeamManagement: React.FC = () => {
-    const [team, setTeam] = useState<User[]>(initialTeam);
+    // Exclude the admin user from the initial state of this page's view
+    const [team, setTeam] = useState<User[]>(initialTeam.filter(u => u.role !== 'Admin'));
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteRole, setInviteRole] = useState<Role>('Agent');

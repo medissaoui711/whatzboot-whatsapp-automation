@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -30,15 +31,20 @@ export default {
         'toast-out': {
           'from': { transform: 'translateX(0)', opacity: '1' },
           'to': { transform: 'translateX(120%)', opacity: '0' },
-        }
+        },
+        'fade-in-up': {
+            'from': { opacity: '0', transform: 'translateY(10px)' },
+            'to': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'toast-in-right': 'toast-in-right 0.5s ease-out forwards',
         'toast-in-left': 'toast-in-left 0.5s ease-out forwards',
         'toast-out': 'toast-out 0.5s ease-in forwards',
+        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
       },
       fontFamily: {
-         tajawal: ['Tajawal', 'sans-serif'],
+         sans: ['Tajawal', 'sans-serif'],
       }
     }
   },

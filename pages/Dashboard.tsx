@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Responsive, WidthProvider } from 'react-grid-layout';
+
 import DashboardCard from '../components/DashboardCard';
 import MessageChart from '../components/MessageChart';
 import { DashboardStats, MessageTrend } from '../types';
@@ -7,38 +9,88 @@ import { useLanguage } from '../i18n/LanguageContext';
 import Skeleton from '../components/ui/Skeleton';
 import WelcomeModal from '../components/WelcomeModal';
 import { useSiteSettings } from '../components/contexts/SiteSettingsContext';
+import Card from '../components/ui/Card';
+import { ALL_TOOLS } from '../data/tools.data';
+import ToolLink from '../components/ui/ToolLink';
+import Button from '../components/ui/Button';
+import { useUser } from '../components/contexts/UserContext';
 
-interface ToolCardProps {
-  title: string;
-  icon: React.ReactNode;
-  path: string;
-  buttonText: string;
-}
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const ToolCard: React.FC<ToolCardProps> = ({ title, icon, path, buttonText }) => {
+const WidgetWrapper: React.FC<{ title: string; children: React.ReactNode; className?: string }> = ({ title, children, className = '' }) => {
+    return (
+        <Card className={`w-full h-full flex flex-col overflow-hidden ${className}`}>
+            <h3 className="text-xl font-semibold text-dark-text-primary mb-4 flex-shrink-0 cursor-move drag-handle flex items-center">
+                <i className="fa-solid fa-grip-vertical mr-3 text-dark-text-secondary"></i>
+                {title}
+            </h3>
+            <div className="flex-grow overflow-hidden">
+                {children}
+            </div>
+        </Card>
+    );
+};
+
+const QuickActionButton: React.FC<{ title: string; icon: React.ReactNode; path: string; }> = ({ title, icon, path }) => {
   return (
-    <div className="bg-dark-card rounded-xl shadow-lg border border-dark-border p-6 flex flex-col items-center text-center hover:shadow-2xl hover:border-whatsapp-green transition-all duration-300 transform hover:-translate-y-1">
-      <div className="text-6xl text-dark-text-primary mb-4">
+    <Link to={path} className="bg-dark-bg rounded-xl border border-dark-border p-4 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-whatsapp-green transition-all duration-300 transform hover:-translate-y-1">
+      <div className="text-4xl text-whatsapp-green mb-3">
         {icon}
       </div>
-      <h3 className="text-md font-semibold text-dark-text-primary mb-5 flex-grow flex items-center justify-center min-h-[4rem]">{title}</h3>
-      <Link to={path} className="w-full mt-auto">
-        <button className="w-full bg-whatsapp-green text-white font-bold py-2 px-4 rounded-lg hover:bg-whatsapp-teal-green transition-colors flex items-center justify-center">
-          {buttonText}
-          <i className="fa-solid fa-arrow-up-right-from-square text-xs ms-2"></i>
-        </button>
-      </Link>
-    </div>
+      <h3 className="text-sm font-semibold text-dark-text-primary flex-grow flex items-center">{title}</h3>
+    </Link>
   );
 };
+
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [trends, setTrends] = useState<MessageTrend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(false);
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const { settings } = useSiteSettings();
+  const { user } = useUser();
+
+  const initialLayouts = {
+      lg: [
+        { i: 'stats', x: 0, y: 0, w: 12, h: 4, minW: 12, minH: 4, maxH: 4 },
+        { i: 'chart', x: 0, y: 4, w: 6, h: 10, minW: 5, minH: 8 },
+        { i: 'quick-actions', x: 6, y: 4, w: 3, h: 10, minW: 2, minH: 8 },
+        { i: 'tools', x: 9, y: 4, w: 3, h: 10, minW: 3, minH: 8 },
+      ],
+      md: [
+        { i: 'stats', x: 0, y: 0, w: 10, h: 4, minW: 10, minH: 4, maxH: 4 },
+        { i: 'chart', x: 0, y: 4, w: 10, h: 9, minW: 6, minH: 8 },
+        { i: 'quick-actions', x: 0, y: 13, w: 5, h: 10, minW: 4, minH: 8 },
+        { i: 'tools', x: 5, y: 13, w: 5, h: 10, minW: 4, minH: 8 },
+      ]
+  };
+
+  const [layouts, setLayouts] = useState(() => {
+    try {
+        const savedLayouts = localStorage.getItem('dashboard-layouts');
+        if (savedLayouts) {
+            const parsedLayouts = JSON.parse(savedLayouts);
+            // Check if all essential widgets are present. If not, reset.
+            const essentialWidgets = ['stats', 'chart', 'tools', 'quick-actions'];
+            const allWidgetsPresent = essentialWidgets.every(widgetId => 
+                parsedLayouts.lg?.find((layout: any) => layout.i === widgetId)
+            );
+            if (allWidgetsPresent) {
+                return parsedLayouts;
+            }
+        }
+    } catch (error) {
+        console.error("Could not parse dashboard layouts from localStorage", error);
+    }
+    return initialLayouts;
+  });
+
+  const onLayoutChange = (layout: any, allLayouts: any) => {
+    localStorage.setItem('dashboard-layouts', JSON.stringify(allLayouts));
+    setLayouts(allLayouts);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -70,88 +122,132 @@ const Dashboard: React.FC = () => {
     }, 1500);
   }, []);
 
-  const allTools = [
-    // Existing Features
-    { id: 'auto_responder', path: '/auto-responder', icon: <i className="fa-solid fa-robot"></i> },
-    { id: 'group_manager', path: '/group-manager', icon: <i className="fa-solid fa-users-gear"></i> },
-    { id: 'broadcaster', path: '/broadcaster', icon: <i className="fa-solid fa-bullhorn"></i> },
-    { id: 'number_filter', path: '/number-filter', icon: <i className="fa-solid fa-filter-circle-check"></i> },
-    
-    // New Tools from images
-    { id: 'google_maps_extractor', path: '/tools/google-maps-extractor', icon: <i className="fa-solid fa-map-location-dot"></i> },
-    { id: 'auto_group_joiner', path: '/tools/auto-group-joiner', icon: <i className="fa-solid fa-person-walking-arrow-right"></i> },
-    { id: 'group_finder', path: '/tools/group-finder', icon: <i className="fa-solid fa-magnifying-glass-plus"></i> },
-    { id: 'group_generator', path: '/tools/group-generator', icon: <i className="fa-solid fa-user-group"></i> },
-    { id: 'social_media_extractor', path: '/tools/social-media-extractor', icon: <i className="fa-solid fa-share-nodes"></i> },
-    { id: 'group_link_scraper', path: '/tools/group-link-scraper', icon: <i className="fa-solid fa-link"></i> },
-    { id: 'active_member_extractor', path: '/tools/active-member-extractor', icon: <i className="fa-solid fa-user-check"></i> },
-    { id: 'chat_list_extractor', path: '/tools/chat-list-extractor', icon: <i className="fa-solid fa-comments"></i> },
-    { id: 'google_contacts_tool', path: '/tools/google-contacts-tool', icon: <i className="fa-solid fa-file-csv"></i> },
-    { id: 'email_extractor', path: '/tools/email-extractor', icon: <i className="fa-solid fa-at"></i> },
-    { id: 'account_warmup', path: '/tools/account-warmup', icon: <i className="fa-solid fa-fire"></i> },
-  ];
+  const getGreeting = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour >= 5 && currentHour < 12) {
+      return t('dashboard.greeting_morning');
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return t('dashboard.greeting_afternoon');
+    } else {
+      return t('dashboard.greeting_evening');
+    }
+  };
 
   return (
     <div>
       {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
       
-      <h2 className="text-3xl font-semibold text-dark-text-primary">{settings ? t(settings.hero.titleKey) : t('dashboard.title')}</h2>
-      <p className="mt-2 text-dark-text-secondary">{settings ? t(settings.hero.subtitleKey) : t('dashboard.subtitle')}</p>
-      
-      <div className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2 lg:grid-cols-4">
-        {isLoading ? (
-            <>
-                <Skeleton className="h-24" />
-                <Skeleton className="h-24" />
-                <Skeleton className="h-24" />
-                <Skeleton className="h-24" />
-            </>
-        ) : stats && (
-          <>
-            <DashboardCard
-              title={t('dashboard.messages_sent')}
-              value={stats.messagesSent.toLocaleString()}
-              icon={<i className="fa-solid fa-paper-plane text-white text-xl"></i>}
-              color="bg-whatsapp-green"
-            />
-            <DashboardCard
-              title={t('dashboard.active_bots')}
-              value={stats.activeBots}
-              icon={<i className="fa-solid fa-robot text-white text-xl"></i>}
-              color="bg-whatsapp-blue"
-            />
-            <DashboardCard
-              title={t('dashboard.groups_managed')}
-              value={stats.groupsManaged}
-              icon={<i className="fa-solid fa-users text-white text-xl"></i>}
-              color="bg-yellow-500"
-            />
-            <DashboardCard
-              title={t('dashboard.total_contacts')}
-              value={stats.contacts.toLocaleString()}
-              icon={<i className="fa-solid fa-address-book text-white text-xl"></i>}
-              color="bg-purple-500"
-            />
-          </>
-        )}
+      <div className="mb-6">
+        <h2 className="text-3xl font-semibold text-dark-text-primary">
+          {getGreeting()}, <span className="font-bold text-whatsapp-green">{user?.name}</span>
+        </h2>
+        <p className="mt-2 text-dark-text-secondary">{settings ? t(settings.hero.subtitleKey) : t('dashboard.subtitle')}</p>
       </div>
       
-      {isLoading ? <Skeleton className="mt-8 h-[360px]" /> : <MessageChart data={trends} />}
-
-      <div className="mt-12">
-        <h3 className="text-2xl font-semibold text-dark-text-primary mb-6">{t('dashboard.tools_title')}</h3>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {allTools.map(tool => (
-            <ToolCard 
-              key={tool.id}
-              title={t(`tools.${tool.id}.title`)}
-              icon={tool.icon}
-              path={tool.path}
-              buttonText={t(`tools.${tool.id}.button`)}
-            />
-          ))}
+      <ResponsiveGridLayout
+        layouts={layouts}
+        onLayoutChange={onLayoutChange}
+        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+        rowHeight={30}
+        draggableHandle=".drag-handle"
+      >
+        <div key="stats">
+            <WidgetWrapper title={t('dashboard.overview_title')}>
+                {isLoading ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <Skeleton className="h-24" />
+                        <Skeleton className="h-24" />
+                        <Skeleton className="h-24" />
+                        <Skeleton className="h-24" />
+                    </div>
+                ) : stats && (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <DashboardCard
+                        title={t('dashboard.messages_sent')}
+                        value={stats.messagesSent.toLocaleString()}
+                        icon={<i className="fa-solid fa-paper-plane text-white text-xl"></i>}
+                        color="bg-whatsapp-green"
+                        />
+                        <DashboardCard
+                        title={t('dashboard.active_bots')}
+                        value={stats.activeBots}
+                        icon={<i className="fa-solid fa-robot text-white text-xl"></i>}
+                        color="bg-whatsapp-blue"
+                        />
+                        <DashboardCard
+                        title={t('dashboard.groups_managed')}
+                        value={stats.groupsManaged}
+                        icon={<i className="fa-solid fa-users text-white text-xl"></i>}
+                        color="bg-yellow-500"
+                        />
+                        <DashboardCard
+                        title={t('dashboard.total_contacts')}
+                        value={stats.contacts.toLocaleString()}
+                        icon={<i className="fa-solid fa-address-book text-white text-xl"></i>}
+                        color="bg-purple-500"
+                        />
+                    </div>
+                )}
+            </WidgetWrapper>
         </div>
-      </div>
+        <div key="chart">
+            <WidgetWrapper title={t('dashboard.message_activity')}>
+                 {isLoading ? <Skeleton className="w-full h-full min-h-[250px]" /> : <MessageChart data={trends} />}
+            </WidgetWrapper>
+        </div>
+        <div key="quick-actions">
+            <WidgetWrapper title={t('dashboard.quick_actions_title')}>
+                 <div className="grid grid-cols-2 gap-4 h-full">
+                    <QuickActionButton 
+                      title={t('dashboard.quick_actions_broadcast')}
+                      icon={<i className="fa-solid fa-paper-plane"></i>}
+                      path="/broadcaster"
+                    />
+                     <QuickActionButton 
+                      title={t('dashboard.quick_actions_autobot')}
+                      icon={<i className="fa-solid fa-robot"></i>}
+                      path="/auto-responder"
+                    />
+                     <QuickActionButton 
+                      title={t('dashboard.quick_actions_add_contact')}
+                      icon={<i className="fa-solid fa-user-plus"></i>}
+                      path="/contact-manager"
+                    />
+                     <QuickActionButton 
+                      title={t('dashboard.quick_actions_view_inbox')}
+                      icon={<i className="fa-solid fa-inbox"></i>}
+                      path="/team-inbox"
+                    />
+                </div>
+            </WidgetWrapper>
+        </div>
+        <div key="tools">
+            <WidgetWrapper title={t('dashboard.tools_title')}>
+                <div className="flex flex-col h-full">
+                    <div className="space-y-3 flex-grow overflow-y-auto -mr-3 pr-3">
+                        {ALL_TOOLS.slice(0, 5).map(tool => (
+                            <ToolLink 
+                                key={tool.id}
+                                title={t(`tools.${tool.id}.title`)}
+                                icon={tool.icon}
+                                path={tool.path}
+                            />
+                        ))}
+                    </div>
+                    <div className="mt-auto pt-4 flex-shrink-0">
+                        <Link to="/tools" className="w-full block">
+                            <Button variant="secondary" className="w-full">
+                                {t('dashboard.view_all_tools')}
+                                <i className={`fa-solid ${dir === 'rtl' ? 'fa-arrow-left' : 'fa-arrow-right'} ml-2`}></i>
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </WidgetWrapper>
+        </div>
+      </ResponsiveGridLayout>
+
     </div>
   );
 };

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useToast } from './contexts/ToastContext';
 import { FeedbackCategory } from '../types';
+import { useModalAccessibility } from '../hooks/useModalAccessibility';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -16,6 +18,9 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t, dir } = useLanguage();
   const { addToast } = useToast();
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  useModalAccessibility(isOpen, onClose, modalRef);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +31,6 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
     // Simulate API call
     setTimeout(() => {
-      console.log({ category, details });
       setIsSubmitting(false);
       addToast(t('notifications.feedback_sent'), { type: 'success' });
       setDetails('');
@@ -42,12 +46,19 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4">
-      <Card className="w-full max-w-lg animate-toast-in-right" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4" onClick={onClose}>
+      <Card 
+        ref={modalRef}
+        className="w-full max-w-lg animate-toast-in-right" 
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feedback-modal-title"
+      >
         <form onSubmit={handleSubmit}>
           <div className="text-center">
             <i className="fa-solid fa-lightbulb-on text-4xl text-yellow-400 mb-3"></i>
-            <h2 className="text-2xl font-bold text-dark-text-primary">{t('feedback.modal_title')}</h2>
+            <h2 id="feedback-modal-title" className="text-2xl font-bold text-dark-text-primary">{t('feedback.modal_title')}</h2>
             <p className="mt-2 text-dark-text-secondary">{t('feedback.modal_subtitle')}</p>
           </div>
 

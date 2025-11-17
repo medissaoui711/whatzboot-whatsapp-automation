@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -8,12 +9,7 @@ import { SkeletonTable } from '../components/ui/Skeleton';
 import { Webhook, WebhookEvent } from '../types';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
-
-const initialWebhooks: Webhook[] = [
-  { id: 'wh_1', name: 'CRM Contact Sync', url: 'https://api.mycrm.com/v1/webhooks/whatsapp', events: ['contact.created', 'message.received'], status: 'active' },
-  { id: 'wh_2', name: 'Analytics Tracker', url: 'https://api.analytics.com/ingress', events: ['message.sent'], status: 'active' },
-  { id: 'wh_3', name: 'Zapier Inbound Messages', url: 'https://hooks.zapier.com/hooks/catch/12345/abcde/', events: ['message.received'], status: 'inactive' },
-];
+import { initialWebhooks } from '../data/webhooks.data';
 
 const WEBHOOK_EVENTS: WebhookEvent[] = [
     'message.received',

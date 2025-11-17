@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { GroupMember } from '../types';
 import Card from '../components/ui/Card';
@@ -7,14 +8,7 @@ import { SkeletonTable } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
-
-const initialMembers: GroupMember[] = [
-  { id: '1', name: 'Alice Johnson', phone: '+1234567890', joined: '2023-10-15', isAdmin: true },
-  { id: '2', name: 'Bob Williams', phone: '+1987654321', joined: '2023-10-16', isAdmin: false },
-  { id: '3', name: 'Charlie Brown', phone: '+1122334455', joined: '2023-10-17', isAdmin: false },
-  { id: '4', name: 'Diana Miller', phone: '+1555666777', joined: '2023-10-18', isAdmin: false },
-  { id: '5', name: 'Eve Davis', phone: '+1444333222', joined: '2023-10-19', isAdmin: false },
-];
+import { initialMembers } from '../data/members.data';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -114,7 +108,13 @@ const GroupManager: React.FC = () => {
                 )}
               </td>
               <td className="p-4">
-                <button onClick={() => handleRemoveClick(member.id)} className="text-dark-text-secondary hover:text-red-500"><i className="fa-solid fa-user-minus"></i> {t('group_manager.action_remove')}</button>
+                <button 
+                  onClick={() => handleRemoveClick(member.id)} 
+                  className="text-dark-text-secondary hover:text-red-500"
+                  aria-label={t('aria.remove', { item: member.name })}
+                >
+                    <i className="fa-solid fa-user-minus"></i> {t('group_manager.action_remove')}
+                </button>
               </td>
             </tr>
           ))}

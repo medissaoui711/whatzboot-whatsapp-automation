@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
@@ -10,14 +11,8 @@ import Button from '../components/ui/Button';
 import Pagination from '../components/ui/Pagination';
 import { analyzeCampaignData } from '../services/geminiService';
 import { useToast } from '../components/contexts/ToastContext';
-import { initialPerformance } from '../data/performance.data';
-
-const initialAnalytics: CampaignAnalytics = {
-    totalCampaigns: 12,
-    deliveryRate: 98.5,
-    readRate: 75.2,
-    replyRate: 15.8,
-};
+import { initialPerformance, initialAnalytics } from '../data/performance.data';
+import ToolLink from '../components/ui/ToolLink';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -188,7 +183,7 @@ const Analytics: React.FC = () => {
                  <Card className="lg:col-span-2">
                      <div className="flex justify-between items-center mb-4">
                         <h3 className="text-xl font-semibold text-dark-text-primary">{t('dashboard.tools_title')}</h3>
-                        <Link to="/dashboard"><Button variant="secondary" size="sm">View All</Button></Link>
+                        <Link to="/tools"><Button variant="secondary" size="sm">View All</Button></Link>
                      </div>
                       <div className="space-y-3">
                         <ToolLink icon={<i className="fa-solid fa-robot"></i>} title={t('nav.auto_responder')} path="/auto-responder" />
@@ -251,16 +246,5 @@ const Analytics: React.FC = () => {
         </div>
     );
 };
-
-const ToolLink: React.FC<{icon: React.ReactNode, title: string, path: string}> = ({icon, title, path}) => {
-    const { dir } = useLanguage();
-    return (
-        <Link to={path} className="flex items-center p-3 bg-dark-input rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-dark-border">
-            <span className="text-xl text-whatsapp-green">{icon}</span>
-            <span className={`font-semibold text-dark-text-primary ${dir === 'rtl' ? 'mr-4' : 'ml-4'}`}>{title}</span>
-            <i className={`fa-solid fa-arrow-right text-dark-text-secondary ${dir === 'rtl' ? 'mr-auto' : 'ml-auto'}`}></i>
-        </Link>
-    )
-}
 
 export default Analytics;

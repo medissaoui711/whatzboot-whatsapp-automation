@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import { useLanguage } from '../i18n/LanguageContext';
 import { Update, UpdateType } from '../types';
+import { useModalAccessibility } from '../hooks/useModalAccessibility';
 
 interface ChangelogModalProps {
   isOpen: boolean;
@@ -18,17 +19,27 @@ const tagColors: { [key in UpdateType]: string } = {
 const ChangelogModal: React.FC<ChangelogModalProps> = ({ isOpen, onClose }) => {
   const { t } = useLanguage();
   const updates: Update[] = t('changelog.updates');
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useModalAccessibility(isOpen, onClose, modalRef);
 
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4">
-      <Card className="w-full max-w-2xl animate-toast-in-right max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4" onClick={onClose}>
+      <Card 
+        ref={modalRef}
+        className="w-full max-w-2xl animate-toast-in-right max-h-[90vh] flex flex-col"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="changelog-modal-title"
+      >
         <div className="text-center">
           <i className="fa-solid fa-gift text-5xl text-whatsapp-green mb-4"></i>
-          <h2 className="text-3xl font-bold text-dark-text-primary">{t('changelog.title')}</h2>
+          <h2 id="changelog-modal-title" className="text-3xl font-bold text-dark-text-primary">{t('changelog.title')}</h2>
           <p className="mt-2 text-dark-text-secondary">{t('changelog.subtitle')}</p>
         </div>
 

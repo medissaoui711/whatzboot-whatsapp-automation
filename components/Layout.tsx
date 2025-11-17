@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import Footer from './Footer';
@@ -20,6 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
 
   const { dir, t } = useLanguage();
+  const location = useLocation();
 
   const updates: Update[] = t('changelog.updates');
   const LATEST_VERSION = updates.length > 0 ? updates[0].version : null;
@@ -30,6 +32,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setIsChangelogOpen(true);
     }
   }, [LATEST_VERSION]);
+
+  // --- Keyboard Shortcut for Global Search ---
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        setGlobalSearchQuery(''); // Clear previous query
+        setIsGlobalSearchOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -64,8 +84,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             openChangelog={() => setIsChangelogOpen(true)}
             onSearchSubmit={openGlobalSearch}
           />
-          <main id="main-content" className="flex-1 overflow-x-hidden overflow-y-auto">
-            <div className="container mx-auto px-6 py-8">
+          <main id="main-content" role="main" className="flex-1 overflow-x-hidden overflow-y-auto">
+            <div key={location.pathname} className="container mx-auto px-6 py-8 animate-fade-in-up">
               {children}
             </div>
             <Footer />

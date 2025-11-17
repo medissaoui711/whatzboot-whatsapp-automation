@@ -8,6 +8,7 @@ import { SiteSettingsProvider } from './components/contexts/SiteSettingsContext'
 
 import Layout from './components/Layout';
 import Login from './pages/Login';
+import Home from './pages/Home'; // Import Home directly for initial load performance
 import { Role } from './types';
 
 // --- Performance Optimization: Code Splitting with React.lazy ---
@@ -26,6 +27,7 @@ const HelpCenter = lazy(() => import('./pages/HelpCenter'));
 const BetaProgram = lazy(() => import('./pages/BetaProgram'));
 const AffiliateProgram = lazy(() => import('./pages/AffiliateProgram'));
 const TemplateManager = lazy(() => import('./pages/TemplateManager'));
+const Tools = lazy(() => import('./pages/Tools'));
 
 // New Core Features
 const TeamInbox = lazy(() => import('./pages/TeamInbox'));
@@ -56,6 +58,12 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
+const FullScreenLoader: React.FC = () => (
+  <div className="flex items-center justify-center min-h-screen w-full">
+    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-whatsapp-green"></div>
+  </div>
+);
+
 const InfoPage: React.FC = () => {
   const location = useLocation();
   const { t } = useLanguage();
@@ -80,83 +88,90 @@ const ProtectedRoute: React.FC<{ children: ReactNode; allowedRoles: Role[] }> = 
     return <>{children}</>;
 };
 
-function AppContent() {
-  const { user } = useUser();
+function AppRoutes() {
+  const { user, loading } = useUser();
 
   const infoPagePaths = [
     "/about", "/features", "/pricing", "/faq", "/how-it-works", "/contact",
     "/mission", "/careers", "/privacy", "/terms", "/press", "/blog", "/ai-terms"
   ];
   
+  if (loading) {
+    return <FullScreenLoader />;
+  }
+
   return (
-      <HashRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route 
-            path="/*"
-            element={
-              user ? (
-                <Layout>
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Routes>
-                      <Route index element={<Navigate to="/dashboard" replace />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      
-                      <Route path="/team-inbox" element={<ProtectedRoute allowedRoles={['Admin', 'Agent']}><TeamInbox /></ProtectedRoute>} />
-                      <Route path="/automations" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><Automations /></ProtectedRoute>} />
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" replace />} />
+      
+      {/* Protected Application Routes */}
+      <Route 
+        path="/*"
+        element={
+          user ? (
+            <Layout>
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  
+                  <Route path="/team-inbox" element={<ProtectedRoute allowedRoles={['Admin', 'Agent']}><TeamInbox /></ProtectedRoute>} />
+                  <Route path="/automations" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><Automations /></ProtectedRoute>} />
 
-                      <Route path="/auto-responder" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer', 'Agent']}><AutoResponder /></ProtectedRoute>} />
-                      <Route path="/group-manager" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer', 'Agent']}><GroupManager /></ProtectedRoute>} />
+                  <Route path="/auto-responder" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer', 'Agent']}><AutoResponder /></ProtectedRoute>} />
+                  <Route path="/group-manager" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer', 'Agent']}><GroupManager /></ProtectedRoute>} />
 
-                      <Route path="/broadcaster" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><Broadcaster /></ProtectedRoute>} />
-                      <Route path="/templates" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><TemplateManager /></ProtectedRoute>} />
-                      <Route path="/contact-manager" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><ContactManager /></ProtectedRoute>} />
-                      <Route path="/analytics" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><Analytics /></ProtectedRoute>} />
-                      
-                      <Route path="/number-filter" element={<ProtectedRoute allowedRoles={['Admin']}><NumberFilter /></ProtectedRoute>} />
-                      <Route path="/settings" element={<ProtectedRoute allowedRoles={['Admin']}><Settings /></ProtectedRoute>} />
-                      <Route path="/settings/team" element={<ProtectedRoute allowedRoles={['Admin']}><TeamManagement /></ProtectedRoute>} />
-                      <Route path="/settings/webhooks" element={<ProtectedRoute allowedRoles={['Admin']}><Webhooks /></ProtectedRoute>} />
-                      <Route path="/settings/billing" element={<ProtectedRoute allowedRoles={['Admin']}><Billing /></ProtectedRoute>} />
-                      <Route path="/settings/beta" element={<BetaProgram />} />
+                  <Route path="/broadcaster" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><Broadcaster /></ProtectedRoute>} />
+                  <Route path="/templates" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><TemplateManager /></ProtectedRoute>} />
+                  <Route path="/contact-manager" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><ContactManager /></ProtectedRoute>} />
+                  <Route path="/analytics" element={<ProtectedRoute allowedRoles={['Admin', 'Marketer']}><Analytics /></ProtectedRoute>} />
+                  
+                  <Route path="/number-filter" element={<ProtectedRoute allowedRoles={['Admin']}><NumberFilter /></ProtectedRoute>} />
+                  <Route path="/settings" element={<ProtectedRoute allowedRoles={['Admin', 'Agent', 'Marketer']}><Settings /></ProtectedRoute>} />
+                  <Route path="/settings/team" element={<ProtectedRoute allowedRoles={['Admin']}><TeamManagement /></ProtectedRoute>} />
+                  <Route path="/settings/webhooks" element={<ProtectedRoute allowedRoles={['Admin']}><Webhooks /></ProtectedRoute>} />
+                  <Route path="/settings/billing" element={<ProtectedRoute allowedRoles={['Admin']}><Billing /></ProtectedRoute>} />
+                  <Route path="/settings/beta" element={<BetaProgram />} />
 
-                      {/* Admin-only Routes */}
-                      <Route path="/admin/monitoring" element={<ProtectedRoute allowedRoles={['Admin']}><MonitoringDashboard /></ProtectedRoute>} />
-                      <Route path="/admin/control-panel" element={<ProtectedRoute allowedRoles={['Admin']}><ControlPanel /></ProtectedRoute>} />
-                      
-                      {/* Routes accessible to all logged-in users */}
-                      <Route path="/help-center" element={<HelpCenter />} />
-                      <Route path="/affiliate-program" element={<AffiliateProgram />} />
+                  {/* Admin-only Routes */}
+                  <Route path="/admin/monitoring" element={<ProtectedRoute allowedRoles={['Admin']}><MonitoringDashboard /></ProtectedRoute>} />
+                  <Route path="/admin/control-panel" element={<ProtectedRoute allowedRoles={['Admin']}><ControlPanel /></ProtectedRoute>} />
+                  
+                  {/* Routes accessible to all logged-in users */}
+                  <Route path="/help-center" element={<HelpCenter />} />
+                  <Route path="/affiliate-program" element={<AffiliateProgram />} />
+                  <Route path="/tools" element={<Tools />} />
 
-                      
-                      {infoPagePaths.map(path => (
-                          <Route key={path} path={path} element={<InfoPage />} />
-                      ))}
-                      
-                      {/* Allow all roles to access tools for now, can be restricted later */}
-                      <Route path="/tools/google-maps-extractor" element={<GoogleMapsExtractor />} />
-                      <Route path="/tools/auto-group-joiner" element={<AutoGroupJoiner />} />
-                      <Route path="/tools/group-finder" element={<GroupFinder />} />
-                      <Route path="/tools/group-generator" element={<GroupGenerator />} />
-                      <Route path="/tools/social-media-extractor" element={<SocialMediaExtractor />} />
-                      <Route path="/tools/group-link-scraper" element={<GroupLinkScraper />} />
-                      <Route path="/tools/active-member-extractor" element={<ActiveMemberExtractor />} />
-                      <Route path="/tools/chat-list-extractor" element={<ChatListExtractor />} />
-                      <Route path="/tools/google-contacts-tool" element={<GoogleContactsTool />} />
-                      <Route path="/tools/email-extractor" element={<EmailExtractor />} />
-                      <Route path="/tools/account-warmup" element={<AccountWarmup />} />
+                  
+                  {infoPagePaths.map(path => (
+                      <Route key={path} path={path} element={<InfoPage />} />
+                  ))}
+                  
+                  {/* Allow all roles to access tools for now, can be restricted later */}
+                  <Route path="/tools/google-maps-extractor" element={<GoogleMapsExtractor />} />
+                  <Route path="/tools/auto-group-joiner" element={<AutoGroupJoiner />} />
+                  <Route path="/tools/group-finder" element={<GroupFinder />} />
+                  <Route path="/tools/group-generator" element={<GroupGenerator />} />
+                  <Route path="/tools/social-media-extractor" element={<SocialMediaExtractor />} />
+                  <Route path="/tools/group-link-scraper" element={<GroupLinkScraper />} />
+                  <Route path="/tools/active-member-extractor" element={<ActiveMemberExtractor />} />
+                  <Route path="/tools/chat-list-extractor" element={<ChatListExtractor />} />
+                  <Route path="/tools/google-contacts-tool" element={<GoogleContactsTool />} />
+                  <Route path="/tools/email-extractor" element={<EmailExtractor />} />
+                  <Route path="/tools/account-warmup" element={<AccountWarmup />} />
 
-                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
-                  </Suspense>
-                </Layout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            } 
-          />
-        </Routes>
-      </HashRouter>
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </Suspense>
+            </Layout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } 
+      />
+    </Routes>
   );
 }
 
@@ -166,9 +181,11 @@ function App() {
       <ToastProvider>
         <UserProvider>
           <SiteSettingsProvider>
-            <div className="bg-dark-bg min-h-screen font-sans">
-              <AppContent />
-            </div>
+            <HashRouter>
+              <div className="bg-dark-bg min-h-screen font-sans">
+                <AppRoutes />
+              </div>
+            </HashRouter>
           </SiteSettingsProvider>
         </UserProvider>
       </ToastProvider>

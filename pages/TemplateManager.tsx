@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MessageTemplate } from '../types';
 import Card from '../components/ui/Card';
@@ -8,13 +9,7 @@ import { SkeletonTable } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
-
-const initialTemplates: MessageTemplate[] = [
-    { id: '1', name: 'Monthly Promotion', message: 'Hello {name}! Check out our monthly promotion for a 20% discount!', approvalStatus: 'Approved' },
-    { id: '2', name: 'Holiday Greeting', message: 'Happy holidays from the WhatzBoot team!', approvalStatus: 'Approved' },
-    { id: '3', name: 'Order Confirmation', message: 'Hi {name}, your order #12345 has been confirmed.', approvalStatus: 'Pending' },
-    { id: '4', name: 'Rejected Template', message: 'This template contains forbidden words.', approvalStatus: 'Rejected' },
-];
+import { initialTemplates } from '../data/templates.data';
 
 const ITEMS_PER_PAGE = 10;
 

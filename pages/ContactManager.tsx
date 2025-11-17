@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Contact } from '../types';
 import Card from '../components/ui/Card';
@@ -35,6 +36,13 @@ const ContactManager: React.FC = () => {
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [importFile, setImportFile] = useState<File | null>(null);
 
+    // --- Bulk Actions State ---
+    const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+    const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+    const [tagToAdd, setTagToAdd] = useState('');
+    const [isBulkDelete, setIsBulkDelete] = useState(false);
+
+
     const importFileRef = useRef<HTMLInputElement>(null);
     const { t, dir } = useLanguage();
     const { addToast } = useToast();
@@ -46,6 +54,11 @@ const ContactManager: React.FC = () => {
             setIsLoading(false);
         }, 1000);
     }, []);
+    
+    useEffect(() => {
+        // Clear selection when filters or page change
+        setSelectedContacts([]);
+    }, [searchTerm, filterTag, currentPage]);
 
     const uniqueTags = useMemo(() => ['All', ...new Set(contacts.flatMap(c => c.tags))], [contacts]);
 
@@ -130,27 +143,37 @@ const ContactManager: React.FC = () => {
 
     const handleDeleteClick = (contactId: string) => {
         setContactToDelete(contactId);
+        setIsBulkDelete(false);
         setIsConfirmModalOpen(true);
     };
 
     const confirmDelete = () => {
-        if (contactToDelete) {
+        if (isBulkDelete) {
+            setContacts(prev => prev.filter(c => !selectedContacts.includes(c.id)));
+            addToast(t('notifications.contacts_deleted_success'), { type: 'success' });
+            setSelectedContacts([]);
+        } else if (contactToDelete) {
             setContacts(contacts.filter(c => c.id !== contactToDelete));
             addToast(t('notifications.contact_deleted'), { type: 'error' });
         }
         setIsConfirmModalOpen(false);
         setContactToDelete(null);
+        setIsBulkDelete(false);
     }
     
     const handleExportCSV = () => {
+        const dataToExport = selectedContacts.length > 0
+            ? contacts.filter(c => selectedContacts.includes(c.id))
+            : filteredContacts;
+            
         const headers = "name,phone,tags";
-        const rows = filteredContacts.map(c => `${c.name},${c.phone},"${c.tags.join(',')}"`).join('\n');
+        const rows = dataToExport.map(c => `${c.name},${c.phone},"${c.tags.join(',')}"`).join('\n');
         const csvContent = "data:text/csv;charset=utf-8," + headers + "\n" + rows;
         
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "whatzboot_contacts.csv");
+        link.setAttribute("download", `whatzboot_contacts_${new Date().toISOString()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -168,8 +191,6 @@ const ContactManager: React.FC = () => {
             addToast(t('validation.upload_csv'), { type: 'error' });
             return;
         }
-        // In a real app, you would parse the CSV here.
-        // For demo purposes, we'll just simulate success.
         addToast(t('notifications.contact_import_success'), { type: 'success' });
         setIsImportModalOpen(false);
         setImportFile(null);
@@ -188,11 +209,49 @@ const ContactManager: React.FC = () => {
         document.body.removeChild(link);
     };
 
+    // --- Bulk Action Handlers ---
+    const handleSelectContact = (id: string) => {
+        setSelectedContacts(prev =>
+            prev.includes(id) ? prev.filter(contactId => contactId !== id) : [...prev, id]
+        );
+    };
+    
+    const handleSelectAll = () => {
+        const currentPageIds = paginatedContacts.map(c => c.id);
+        const allSelected = currentPageIds.every(id => selectedContacts.includes(id));
+        if (allSelected) {
+            setSelectedContacts(prev => prev.filter(id => !currentPageIds.includes(id)));
+        } else {
+            setSelectedContacts(prev => [...new Set([...prev, ...currentPageIds])]);
+        }
+    };
+    
+    const handleBulkAddTag = () => {
+        if (!tagToAdd.trim()) {
+            addToast(t('validation.required'), {type: 'error'});
+            return;
+        }
+        setContacts(prev => prev.map(c => {
+            if (selectedContacts.includes(c.id) && !c.tags.includes(tagToAdd)) {
+                return { ...c, tags: [...c.tags, tagToAdd] };
+            }
+            return c;
+        }));
+        addToast(t('notifications.tags_added_success'), {type: 'success'});
+        setIsTagModalOpen(false);
+        setTagToAdd('');
+    };
+    
+    const handleBulkDelete = () => {
+        setIsBulkDelete(true);
+        setIsConfirmModalOpen(true);
+    };
+
     const textAlignmentClass = dir === 'rtl' ? 'text-right' : 'text-left';
 
     const renderContent = () => {
         if (isLoading) {
-            return <SkeletonTable rows={3} cols={4} />;
+            return <SkeletonTable rows={3} cols={5} />;
         }
         if (contacts.length === 0) {
             return (
@@ -213,10 +272,19 @@ const ContactManager: React.FC = () => {
                 />
             );
         }
+        const isAllOnPageSelected = paginatedContacts.length > 0 && paginatedContacts.every(c => selectedContacts.includes(c.id));
         return (
             <table className={`w-full ${textAlignmentClass}`}>
                 <thead className="bg-white/5">
                     <tr>
+                        <th className="p-4 w-12">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 text-whatsapp-green focus:ring-whatsapp-teal-green border-dark-border rounded bg-dark-input"
+                                checked={isAllOnPageSelected}
+                                onChange={handleSelectAll}
+                            />
+                        </th>
                         <th className="p-4 font-semibold text-dark-text-secondary">{t('contact_manager.table_name')}</th>
                         <th className="p-4 font-semibold text-dark-text-secondary">{t('contact_manager.table_phone')}</th>
                         <th className="p-4 font-semibold text-dark-text-secondary">{t('contact_manager.table_tags')}</th>
@@ -225,7 +293,15 @@ const ContactManager: React.FC = () => {
                 </thead>
                 <tbody>
                     {paginatedContacts.map((contact) => (
-                        <tr key={contact.id} className="border-b border-dark-border hover:bg-white/5">
+                        <tr key={contact.id} className={`border-b border-dark-border ${selectedContacts.includes(contact.id) ? 'bg-whatsapp-green/10' : 'hover:bg-white/5'}`}>
+                            <td className="p-4">
+                                 <input
+                                    type="checkbox"
+                                    className="h-4 w-4 text-whatsapp-green focus:ring-whatsapp-teal-green border-dark-border rounded bg-dark-input"
+                                    checked={selectedContacts.includes(contact.id)}
+                                    onChange={() => handleSelectContact(contact.id)}
+                                />
+                            </td>
                             <td className="p-4 text-dark-text-primary">{contact.name}</td>
                             <td className="p-4 text-dark-text-secondary font-mono">{contact.phone}</td>
                             <td className="p-4">
@@ -268,32 +344,42 @@ const ContactManager: React.FC = () => {
                 </div>
             </div>
             <Card className="mt-8">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={e => {
-                            setSearchTerm(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        placeholder={`${t('common.search')}...`}
-                        className="w-full sm:w-72 p-2 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary placeholder:text-dark-text-secondary"
-                    />
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <label htmlFor="tag-filter" className="text-dark-text-secondary">{t('common.filter_by')}:</label>
-                        <select
-                            id="tag-filter"
-                            value={filterTag}
+                {selectedContacts.length > 0 ? (
+                    <div className="mb-4 p-3 bg-dark-input rounded-lg flex justify-between items-center">
+                        <span className="font-semibold text-dark-text-primary">{t('contact_manager.selected_count', { count: selectedContacts.length })}</span>
+                        <div className="flex items-center gap-2">
+                            <Button onClick={() => setIsTagModalOpen(true)} variant="secondary" size="sm">{t('contact_manager.add_tag_action')}</Button>
+                            <Button onClick={handleBulkDelete} variant="danger" size="sm">{t('contact_manager.delete_selected_action')}</Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+                        <input
+                            type="text"
+                            value={searchTerm}
                             onChange={e => {
-                                setFilterTag(e.target.value);
+                                setSearchTerm(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            className="p-2 border border-dark-border rounded-lg bg-dark-input text-dark-text-primary"
-                        >
-                            {uniqueTags.map(tag => <option key={tag} value={tag}>{tag === 'All' ? t('common.all') : tag}</option>)}
-                        </select>
+                            placeholder={`${t('common.search')}...`}
+                            className="w-full sm:w-72 p-2 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary placeholder:text-dark-text-secondary"
+                        />
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                            <label htmlFor="tag-filter" className="text-dark-text-secondary">{t('common.filter_by')}:</label>
+                            <select
+                                id="tag-filter"
+                                value={filterTag}
+                                onChange={e => {
+                                    setFilterTag(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="p-2 border border-dark-border rounded-lg bg-dark-input text-dark-text-primary"
+                            >
+                                {uniqueTags.map(tag => <option key={tag} value={tag}>{tag === 'All' ? t('common.all') : tag}</option>)}
+                            </select>
+                        </div>
                     </div>
-                </div>
+                )}
                 {renderContent()}
             </Card>
             
@@ -345,9 +431,9 @@ const ContactManager: React.FC = () => {
                     <Card className="w-full max-w-lg">
                         <h3 className="text-2xl font-semibold mb-2 text-dark-text-primary">{t('contact_manager.import_modal_title')}</h3>
                         <p className="text-dark-text-secondary mb-4">{t('contact_manager.import_modal_subtitle')}</p>
-                        <a href="#" onClick={handleDownloadSample} className="text-sm text-whatsapp-green hover:underline">
+                        <button onClick={handleDownloadSample} className="text-sm text-whatsapp-green hover:underline">
                            <i className="fa-solid fa-download me-2"></i> {t('contact_manager.import_modal_download_sample')}
-                        </a>
+                        </button>
 
                         <div 
                             className="mt-4 border-2 border-dashed border-dark-border rounded-lg p-8 text-center cursor-pointer hover:border-whatsapp-green"
@@ -373,6 +459,27 @@ const ContactManager: React.FC = () => {
                     </Card>
                 </div>
             )}
+
+            {/* Add Tag Modal */}
+            {isTagModalOpen && (
+                 <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center">
+                    <Card className="w-full max-w-md">
+                        <h3 className="text-2xl font-semibold mb-4">{t('contact_manager.tag_modal_title')}</h3>
+                        <input
+                            type="text"
+                            value={tagToAdd}
+                            onChange={e => setTagToAdd(e.target.value)}
+                            placeholder={t('contact_manager.tag_modal_placeholder')}
+                            className="w-full p-2 bg-dark-input border border-dark-border rounded-lg"
+                        />
+                         <div className="flex justify-end mt-6 space-x-4 rtl:space-x-reverse">
+                            <Button variant="secondary" onClick={() => setIsTagModalOpen(false)}>{t('contact_manager.modal_cancel')}</Button>
+                            <Button onClick={handleBulkAddTag}>{t('contact_manager.tag_modal_add_button')}</Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
+
         </div>
     );
 };

@@ -6,4 +6,84 @@
   [lang="ar"] body, [lang="ar"] button, [lang="ar"] input, [lang="ar"] textarea, [lang="ar"] select {
     font-family: 'Tajawal', sans-serif;
   }
+
+  /* Remove default outline on focus, replaced by focus-visible */
+  *:focus {
+    outline: none;
+  }
+
+  /* Custom focus ring for accessibility */
+  *:focus-visible {
+    outline: 2px solid #34B7F1; /* whatsapp-blue */
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* react-grid-layout custom styles */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+.react-grid-item.resizing {
+  z-index: 1;
+  will-change: width, height;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 3;
+  will-change: transform;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: #25D366;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  border-radius: 0.75rem;
+}
+
+/* Custom resize handle style for dark theme */
+.react-resizable-handle {
+    background-image: none !important;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+    padding: 0 3px 3px 0;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    box-sizing: border-box;
+}
+
+.react-resizable-handle::after{
+    content: "";
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 5px;
+    height: 5px;
+    border-right: 2px solid #8b949e; /* dark-text-secondary */
+    border-bottom: 2px solid #8b949e; /* dark-text-secondary */
+    transition: border-color 0.2s ease;
+}
+
+.react-resizable-handle:hover::after {
+    border-right-color: #c9d1d9; /* dark-text-primary */
+    border-bottom-color: #c9d1d9; /* dark-text-primary */
 }

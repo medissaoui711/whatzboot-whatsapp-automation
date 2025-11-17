@@ -1,4 +1,12 @@
-import { CampaignPerformance } from '../types';
+
+import { CampaignPerformance, CampaignAnalytics } from '../types';
+
+export const initialAnalytics: CampaignAnalytics = {
+    totalCampaigns: 12,
+    deliveryRate: 98.5,
+    readRate: 75.2,
+    replyRate: 15.8,
+};
 
 export const initialPerformance: CampaignPerformance[] = [
     { id: '1', name: 'Q4 Holiday Sale', sentDate: '2023-12-15', recipients: 1250, deliveryRate: 99.1, readRate: 82.5, replyRate: 20.3 },

@@ -27,6 +27,16 @@ export const translations = {
       save_button: "Save Changes",
     },
 
+    aria: {
+      edit: "Edit {item}",
+      delete: "Delete {item}",
+      test: "Test {item}",
+      remove: "Remove {item}",
+      open_menu: "Open menu",
+      close_menu: "Close menu",
+      close_modal: "Close modal",
+    },
+
     confirmation: {
         title: "Are you sure?",
         delete_message: "Are you sure you want to delete this item? This action cannot be undone.",
@@ -58,8 +68,10 @@ export const translations = {
       template_test_sent: "Test message sent successfully!",
       contact_saved: "Contact saved successfully!",
       contact_deleted: "Contact deleted.",
+      contacts_deleted_success: "Selected contacts have been deleted.",
       contact_import_success: "Contacts imported successfully!",
       contact_export_success: "Contacts exported successfully!",
+      tags_added_success: "Tags added to selected contacts.",
       filter_started: "Number filtering process started.",
       results_downloaded: "Results downloaded successfully.",
       settings_saved: "Settings saved successfully!",
@@ -133,6 +145,22 @@ export const translations = {
         no_templates_message: "Create your first message template to use in broadcasts and automations.",
     },
 
+    // Public Homepage
+    home: {
+      hero_title: "The Future of WhatsApp Automation is Here",
+      hero_subtitle: "Engage customers, manage groups, and drive sales with our all-in-one AI-powered platform. Save time and scale your business like never before.",
+      cta_button: "Get Started Now",
+      features_title: "Discover a World of Powerful Features",
+      feature_autobot_title: "AI Auto Responder",
+      feature_autobot_desc: "Create smart bots that handle customer queries 24/7, freeing up your team to focus on what matters.",
+      feature_broadcast_title: "Powerful Broadcaster",
+      feature_broadcast_desc: "Send personalized bulk messages to thousands of contacts with just a few clicks. Schedule campaigns for the perfect time.",
+      feature_analytics_title: "In-Depth Analytics",
+      feature_analytics_desc: "Track your campaign performance, understand your audience, and make data-driven decisions to boost engagement.",
+      feature_tools_title: "Advanced Tools Suite",
+      feature_tools_desc: "From extracting contacts from Google Maps to finding new groups, access a wide range of tools to supercharge your marketing.",
+      public_header_login: "Login",
+    },
 
     // Login Page
     login: {
@@ -142,6 +170,7 @@ export const translations = {
       remember_me: "Remember me",
       forgot_password: "Forgot your password?",
       signin_button: "Sign In",
+      error_invalid_credentials: "Invalid email or password. Please try again.",
     },
 
     // Navigation
@@ -174,6 +203,8 @@ export const translations = {
       userPlan: "Premium Plan",
       help: "Help",
       whats_new: "What's New",
+      profile: "Profile",
+      logout: "Logout",
     },
 
     // Global Search
@@ -190,6 +221,10 @@ export const translations = {
     dashboard: {
       title: "Dashboard",
       subtitle: "Here's an overview of your account activity.",
+      greeting_morning: "Good morning",
+      greeting_afternoon: "Good afternoon",
+      greeting_evening: "Good evening",
+      overview_title: "Quick Stats",
       messages_sent: "Messages Sent",
       active_bots: "Active Bots",
       groups_managed: "Groups Managed",
@@ -198,6 +233,12 @@ export const translations = {
       sent: "Sent",
       received: "Received",
       tools_title: "Tools & Features",
+      quick_actions_title: "Quick Actions",
+      quick_actions_broadcast: "New Broadcast",
+      quick_actions_autobot: "Create Auto-Bot",
+      quick_actions_add_contact: "Add Contact",
+      quick_actions_view_inbox: "View Inbox",
+      view_all_tools: "View All Tools",
     },
 
     // Team Inbox Page
@@ -312,6 +353,16 @@ export const translations = {
         ai_modal_placeholder: "e.g., Announce a 20% flash sale for 48 hours.",
         ai_modal_generate: "Generate Message",
         ai_modal_use_message: "Use this Message",
+        wizard_step_1_title: "Compose",
+        wizard_step_2_title: "Audience",
+        wizard_step_3_title: "Review & Send",
+        back_button: "Back",
+        next_button: "Next: {step_name}",
+        review_title: "Review & Confirm",
+        review_message_preview: "Message Preview",
+        review_no_message: "No message composed yet.",
+        review_audience: "Audience File",
+        review_no_audience: "No audience file uploaded."
     },
 
     // Template Manager Page
@@ -362,6 +413,13 @@ export const translations = {
         import_modal_download_sample: "Download Sample CSV",
         import_modal_upload_cta: "Click to upload or drag and drop a .csv file.",
         import_modal_import_button: "Import Contacts",
+        selected_count: "{count} selected",
+        actions_button: "Actions",
+        add_tag_action: "Add Tag",
+        delete_selected_action: "Delete Selected",
+        tag_modal_title: "Add Tag to Selected Contacts",
+        tag_modal_placeholder: "Enter tag name",
+        tag_modal_add_button: "Add Tag",
     },
 
     // Analytics Page
@@ -691,6 +749,14 @@ export const translations = {
         },
       ]
     },
+    
+    // All Tools Page
+    tools_page: {
+      title: "All Tools & Features",
+      subtitle: "Explore all the powerful tools available to you.",
+      search_placeholder: "Search for a tool..."
+    },
+
 
     // Tools
     tools: {
@@ -843,54 +909,54 @@ export const translations = {
     },
 
     info_pages: {
-        default_welcome: "Welcome to the {title} page",
-        default_soon: "Content for this page is coming soon. Thank you for your patience!",
+        default_welcome: "مرحبًا بك في صفحة {title}",
+        default_soon: "محتوى هذه الصفحة سيأتي قريبًا. شكرًا لصبرك!",
         privacy: {
-            title: "Privacy Policy",
+            title: "سياسة الخصوصية",
             content: <div className="space-y-4 text-dark-text-secondary">
-                <p>This Privacy Policy describes how your information is collected, used, and disclosed by WhatzBoot. We are committed to protecting your privacy and ensuring the security of your data.</p>
-                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">1. Information We Collect</h3>
-                <p>We collect information you provide directly to us, such as your name, email address, and payment information when you register for our service. We also collect data related to your usage of our services, including messages sent and contacts managed, for the sole purpose of providing and improving our service.</p>
-                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">2. How We Use Your Information</h3>
-                <p>Your data is used to operate, maintain, and provide to you the features and functionality of WhatzBoot. We do not sell your data to third parties. We do not access the content of your messages unless required for support purposes, with your explicit consent.</p>
-                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">3. Data Security</h3>
-                <p>We implement industry-standard security measures to protect your information from unauthorized access, alteration, disclosure, or destruction.</p>
+                <p>تصف سياسة الخصوصية هذه كيفية جمع واستخدام والكشف عن معلوماتك بواسطة واتزبوت. نحن ملتزمون بحماية خصوصيتك وضمان أمان بياناتك.</p>
+                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">1. المعلومات التي نجمعها</h3>
+                <p>نحن نجمع المعلومات التي تقدمها لنا مباشرة، مثل اسمك وعنوان بريدك الإلكتروني ومعلومات الدفع عند التسجيل في خدمتنا. كما نجمع بيانات تتعلق باستخدامك لخدماتنا، بما في ذلك الرسائل المرسلة وجهات الاتصال المدارة، وذلك لغرض توفير وتحسين خدمتنا فقط.</p>
+                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">2. كيف نستخدم معلوماتك</h3>
+                <p>تُستخدم بياناتك لتشغيل وصيانة وتزويدك بميزات ووظائف واتزبوت. نحن لا نبيع بياناتك لأطراف ثالثة. لا نصل إلى محتوى رسائلك إلا إذا كان ذلك مطلوبًا لأغراض الدعم، بموافقتك الصريحة.</p>
+                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">3. أمن البيانات</h3>
+                <p>ننفذ تدابير أمنية متوافقة مع معايير الصناعة لحماية معلوماتك من الوصول غير المصرح به أو التغيير أو الكشف أو التدمير.</p>
             </div>,
         },
         terms: {
-            title: "Terms of Service",
+            title: "شروط الخدمة",
             content: <div className="space-y-4 text-dark-text-secondary">
-                <p>By using WhatzBoot, you agree to these Terms of Service. Please read them carefully.</p>
-                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">1. Account Responsibility</h3>
-                <p>You are responsible for all activity that occurs under your account. You agree not to engage in any activity that violates WhatsApp's Terms of Service, including spamming or sending unsolicited messages.</p>
-                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">2. Prohibited Use</h3>
-                <p>You may not use our service for any illegal or unauthorized purpose. Violation of these terms may result in suspension or termination of your account.</p>
+                <p>باستخدام واتزبوت، فإنك توافق على شروط الخدمة هذه. يرجى قراءتها بعناية.</p>
+                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">1. مسؤولية الحساب</h3>
+                <p>أنت مسؤول عن جميع الأنشطة التي تحدث تحت حسابك. أنت توافق على عدم الانخراط في أي نشاط ينتهك شروط خدمة واتساب، بما في ذلك إرسال الرسائل غير المرغوب فيها أو الرسائل غير المطلوبة.</p>
+                <h3 className="text-xl font-semibold text-dark-text-primary pt-2">2. الاستخدام المحظور</h3>
+                <p>لا يجوز لك استخدام خدمتنا لأي غرض غير قانوني أو غير مصرح به. قد يؤدي انتهاك هذه الشروط إلى تعليق حسابك أو إنهائه.</p>
             </div>,
         }
     },
 
     footer: {
-        tagline: "The #1 Platform for WhatsApp Automation & Marketing.",
-        pages_title: "Pages",
-        home: "Home",
-        about_us: "About Us",
-        features: "Features",
-        pricing: "Pricing",
-        faq: "FAQ",
-        how_it_works: "How it Works",
-        contact_us: "Contact Us",
-        company_title: "Company",
-        our_mission: "Our Mission",
-        careers: "Careers",
-        privacy_policy: "Privacy Policy",
-        terms_of_service: "Terms of Service",
-        ai_terms: "AI Terms",
-        press_kit: "Press Kit",
-        blog: "Blog",
-        social_title: "Follow Us",
-        copyright: "© {year} WhatzBoot. All rights reserved.",
-        ai_status: "AI Systems Operational",
-        scroll_top: "Scroll to Top",
+        tagline: "المنصة رقم #1 لأتمتة واتساب والتسويق.",
+        pages_title: "الصفحات",
+        home: "الرئيسية",
+        about_us: "عنا",
+        features: "الميزات",
+        pricing: "الأسعار",
+        faq: "الأسئلة الشائعة",
+        how_it_works: "كيف يعمل",
+        contact_us: "اتصل بنا",
+        company_title: "الشركة",
+        our_mission: "مهمتنا",
+        careers: "الوظائف",
+        privacy_policy: "سياسة الخصوصية",
+        terms_of_service: "شروط الخدمة",
+        ai_terms: "شروط الذكاء الاصطناعي",
+        press_kit: "الملف الصحفي",
+        blog: "المدونة",
+        social_title: "تابعنا",
+        copyright: "© {year} واتزبوت. جميع الحقوق محفوظة.",
+        ai_status: "أنظمة الذكاء الاصطناعي تعمل",
+        scroll_top: "الانتقال إلى الأعلى",
     },
   },
   ar: {
@@ -915,6 +981,16 @@ export const translations = {
       page_of: "صفحة {currentPage} من {totalPages}",
       view: "عرض",
       save_button: "حفظ التغييرات",
+    },
+
+    aria: {
+      edit: "تعديل {item}",
+      delete: "حذف {item}",
+      test: "اختبار {item}",
+      remove: "إزالة {item}",
+      open_menu: "فتح القائمة",
+      close_menu: "إغلاق القائمة",
+      close_modal: "إغلاق النافذة",
     },
 
     confirmation: {
@@ -946,8 +1022,10 @@ export const translations = {
       template_test_sent: "تم إرسال رسالة الاختبار بنجاح!",
       contact_saved: "تم حفظ جهة الاتصال بنجاح!",
       contact_deleted: "تم حذف جهة الاتصال.",
+      contacts_deleted_success: "تم حذف جهات الاتصال المحددة.",
       contact_import_success: "تم استيراد جهات الاتصال بنجاح!",
       contact_export_success: "تم تصدير جهات الاتصال بنجاح!",
+      tags_added_success: "تمت إضافة العلامات إلى جهات الاتصال المحددة.",
       filter_started: "بدأت عملية فلترة الأرقام.",
       results_downloaded: "تم تنزيل النتائج بنجاح.",
       settings_saved: "تم حفظ الإعدادات بنجاح!",
@@ -1019,6 +1097,22 @@ export const translations = {
         no_templates_message: "أنشئ أول قالب رسالة لاستخدامه في الحملات والأتمتة.",
     },
 
+    home: {
+      hero_title: "مستقبل أتمتة الواتساب هنا",
+      hero_subtitle: "تفاعل مع العملاء، أدر المجموعات، وزد مبيعاتك مع منصتنا الشاملة المدعومة بالذكاء الاصطناعي. وفر الوقت ونمّي أعمالك كما لم يحدث من قبل.",
+      cta_button: "ابدأ الآن",
+      features_title: "اكتشف عالمًا من الميزات القوية",
+      feature_autobot_title: "الرد التلقائي الذكي",
+      feature_autobot_desc: "أنشئ بوتات ذكية تتعامل مع استفسارات العملاء 24/7، مما يحرر فريقك للتركيز على ما هو أهم.",
+      feature_broadcast_title: "مرسل رسائل جماعية قوي",
+      feature_broadcast_desc: "أرسل رسائل جماعية مخصصة لآلاف جهات الاتصال ببضع نقرات فقط. قم بجدولة الحملات للوقت المثالي.",
+      feature_analytics_title: "تحليلات متعمقة",
+      feature_analytics_desc: "تتبع أداء حملتك، افهم جمهورك، واتخذ قرارات مبنية على البيانات لزيادة التفاعل.",
+      feature_tools_title: "مجموعة أدوات متقدمة",
+      feature_tools_desc: "من استخراج جهات الاتصال من خرائط جوجل إلى العثور على مجموعات جديدة، احصل على مجموعة واسعة من الأدوات لتعزيز تسويقك.",
+      public_header_login: "تسجيل الدخول",
+    },
+
     login: {
       title: "أتمتة اتصالاتك على واتساب.",
       email_placeholder: "عنوان البريد الإلكتروني",
@@ -1026,6 +1120,7 @@ export const translations = {
       remember_me: "تذكرني",
       forgot_password: "هل نسيت كلمة المرور؟",
       signin_button: "تسجيل الدخول",
+      error_invalid_credentials: "البريد الإلكتروني أو كلمة المرور غير صالحة. يرجى المحاولة مرة أخرى.",
     },
 
     nav: {
@@ -1055,6 +1150,8 @@ export const translations = {
       userPlan: "الخطة المميزة",
       help: "المساعدة",
       whats_new: "ما الجديد",
+      profile: "الملف الشخصي",
+      logout: "تسجيل الخروج",
     },
 
     global_search: {
@@ -1069,6 +1166,10 @@ export const translations = {
     dashboard: {
       title: "لوحة التحكم",
       subtitle: "إليك نظرة عامة على نشاط حسابك.",
+      greeting_morning: "صباح الخير",
+      greeting_afternoon: "مساء الخير",
+      greeting_evening: "مساء الخير",
+      overview_title: "إحصائيات سريعة",
       messages_sent: "الرسائل المرسلة",
       active_bots: "البوتات النشطة",
       groups_managed: "المجموعات المدارة",
@@ -1077,6 +1178,12 @@ export const translations = {
       sent: "مرسل",
       received: "مستلم",
       tools_title: "الأدوات والميزات",
+      quick_actions_title: "إجراءات سريعة",
+      quick_actions_broadcast: "رسالة جماعية جديدة",
+      quick_actions_autobot: "إنشاء بوت تلقائي",
+      quick_actions_add_contact: "إضافة جهة اتصال",
+      quick_actions_view_inbox: "عرض صندوق الوارد",
+      view_all_tools: "عرض كل الأدوات",
     },
 
     team_inbox: {
@@ -1186,6 +1293,16 @@ export const translations = {
       ai_modal_placeholder: "مثال: إعلان عن خصم 20% لمدة 48 ساعة.",
       ai_modal_generate: "إنشاء رسالة",
       ai_modal_use_message: "استخدم هذه الرسالة",
+      wizard_step_1_title: "كتابة الرسالة",
+      wizard_step_2_title: "تحديد الجمهور",
+      wizard_step_3_title: "مراجعة وإرسال",
+      back_button: "رجوع",
+      next_button: "التالي: {step_name}",
+      review_title: "مراجعة وتأكيد",
+      review_message_preview: "معاينة الرسالة",
+      review_no_message: "لم يتم كتابة رسالة بعد.",
+      review_audience: "ملف الجمهور",
+      review_no_audience: "لم يتم تحميل ملف جمهور.",
     },
     
     template_manager: {
@@ -1234,6 +1351,13 @@ export const translations = {
         import_modal_download_sample: "تنزيل ملف نموذجي",
         import_modal_upload_cta: "انقر للتحميل أو اسحب وأفلت ملف .csv.",
         import_modal_import_button: "استيراد جهات الاتصال",
+        selected_count: "تم تحديد {count}",
+        actions_button: "إجراءات",
+        add_tag_action: "إضافة علامة",
+        delete_selected_action: "حذف المحدد",
+        tag_modal_title: "إضافة علامة لجهات الاتصال المحددة",
+        tag_modal_placeholder: "أدخل اسم العلامة",
+        tag_modal_add_button: "إضافة علامة",
     },
 
     analytics: {
@@ -1548,6 +1672,13 @@ export const translations = {
           ]
         },
       ]
+    },
+
+    // All Tools Page
+    tools_page: {
+      title: "جميع الأدوات والميزات",
+      subtitle: "استكشف جميع الأدوات القوية المتاحة لك.",
+      search_placeholder: "ابحث عن أداة..."
     },
 
     tools: {

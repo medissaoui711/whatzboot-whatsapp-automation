@@ -1,17 +1,9 @@
 
-// FIX: Import GoogleGenAI and GenerateContentResponse from @google/genai as per guidelines.
 import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
 import { CampaignPerformance } from "../types";
 
-// A singleton instance of the GoogleGenAI client.
-// It will be initialized only when it's first needed.
 let aiInstance: GoogleGenAI | null = null;
 
-/**
- * Initializes and returns the GoogleGenAI client instance.
- * Throws an error if the API key is not configured.
- * This prevents the entire application from crashing on startup if the key is missing.
- */
 const getAiClient = (): GoogleGenAI => {
     if (!aiInstance) {
         const apiKey = process.env.API_KEY;
@@ -24,19 +16,13 @@ const getAiClient = (): GoogleGenAI => {
     return aiInstance;
 };
 
-// All exported functions will now call getAiClient() to ensure the client is initialized.
-// They will also include a try-catch block to handle initialization failures gracefully.
-
 export const generateSmartReply = async (prompt: string): Promise<string> => {
-  console.log(`Generating smart reply for prompt: "${prompt}"`);
-
   try {
     const ai = getAiClient();
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: `Generate a polite and professional WhatsApp response for the following query: "${prompt}"`,
     });
-    // FIX: Access the 'text' property directly from the response object, which is the recommended way to get the text output.
     return response.text;
   } catch (error) {
     console.error("Error generating content with Gemini:", error);

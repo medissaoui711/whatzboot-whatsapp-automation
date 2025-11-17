@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef } from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -7,17 +6,36 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useToast } from '../components/contexts/ToastContext';
 import { MessageTemplate } from '../types';
 import { generateBroadcastMessage } from '../services/geminiService';
+import { broadcasterTemplates } from '../data/templates.data';
+
+const StepIndicator: React.FC<{ step: number; title: string; isActive: boolean; isComplete: boolean; }> = ({ step, title, isActive, isComplete }) => {
+    const baseClasses = "flex items-center flex-col flex-1";
+    const circleClasses = `w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all duration-300 ${
+        isActive || isComplete ? 'bg-whatsapp-green border-whatsapp-green text-white' : 'bg-dark-input border-dark-border text-dark-text-secondary'
+    }`;
+    const titleClasses = `mt-2 text-sm font-semibold text-center ${
+        isActive || isComplete ? 'text-dark-text-primary' : 'text-dark-text-secondary'
+    }`;
+
+    return (
+        <div className={baseClasses}>
+            <div className={circleClasses}>
+                {isComplete ? <i className="fa-solid fa-check"></i> : step}
+            </div>
+            <p className={titleClasses}>{title}</p>
+        </div>
+    );
+};
+
 
 const Broadcaster: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [message, setMessage] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
   const [isScheduled, setIsScheduled] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
-  const [templates, setTemplates] = useState<MessageTemplate[]>([
-      { id: '1', name: 'Monthly Promotion', message: 'Hello! Check out our monthly promotion for a 20% discount!', approvalStatus: 'Approved' },
-      { id: '2', name: 'Holiday Greeting', message: 'Happy holidays from the WhatzBoot team!', approvalStatus: 'Approved' },
-  ]);
+  const [templates] = useState<MessageTemplate[]>(broadcasterTemplates);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
   
@@ -30,6 +48,9 @@ const Broadcaster: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t, dir } = useLanguage();
   const { addToast } = useToast();
+  
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -52,6 +73,11 @@ const Broadcaster: React.FC = () => {
     } else {
         addToast(t('notifications.broadcast_sent'), { type: 'success' });
     }
+    // Reset state after sending
+    setCurrentStep(1);
+    setMessage('');
+    setFileName(null);
+    setIsScheduled(false);
   };
 
   const handleSaveTemplate = () => {
@@ -67,8 +93,6 @@ const Broadcaster: React.FC = () => {
         addToast(t('validation.required'), { type: 'error' });
         return;
     }
-    // In a real app, this would save to a shared state/backend
-    // For now, it just adds to the local list.
     addToast(t('notifications.template_saved'), { type: 'success' });
     setIsTemplateModalOpen(false);
     setNewTemplateName('');
@@ -118,82 +142,134 @@ const Broadcaster: React.FC = () => {
       <h2 className="text-3xl font-semibold text-dark-text-primary">{t('broadcaster.title')}</h2>
       <p className="mt-2 text-dark-text-secondary">{t('broadcaster.subtitle')}</p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <div className="lg:col-span-2 space-y-8">
-            <Card>
-                <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-dark-text-primary">{t('broadcaster.compose_title')}</h3>
-                     <Button variant="secondary" size="sm" onClick={openAiModal} icon={<i className="fa-solid fa-wand-magic-sparkles"></i>}>
-                        {t('broadcaster.ai_assistant_button')}
-                    </Button>
-                </div>
-                <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    rows={10}
-                    className={`w-full mt-4 p-3 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary placeholder:text-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-whatsapp-green ${textAlignmentClass}`}
-                    placeholder={t('broadcaster.compose_placeholder')}
-                ></textarea>
-                <div className="flex justify-between items-center mt-4">
-                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                         <label htmlFor="template-select" className="sr-only">{t('broadcaster.load_template')}</label>
-                         <select id="template-select" onChange={handleLoadTemplate} className={`p-2 border border-dark-border rounded-lg bg-dark-input text-dark-text-primary text-sm ${textAlignmentClass}`}>
-                            <option value="">{t('broadcaster.load_template')}</option>
-                            {templates.filter(t => t.approvalStatus === 'Approved').map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                         </select>
-                     </div>
-                     <Button variant="secondary" size="sm" onClick={handleSaveTemplate} icon={<i className="fa-solid fa-save"></i>}>
-                        {t('broadcaster.save_template')}
-                    </Button>
-                </div>
-            </Card>
+      <Card className="mt-8">
+        {/* Step Indicator */}
+        <div className="flex items-start w-full max-w-2xl mx-auto mb-10">
+            <StepIndicator step={1} title={t('broadcaster.wizard_step_1_title')} isActive={currentStep === 1} isComplete={currentStep > 1} />
+            <div className={`flex-grow h-0.5 mt-5 transition-colors duration-300 ${currentStep > 1 ? 'bg-whatsapp-green' : 'bg-dark-border'}`} />
+            <StepIndicator step={2} title={t('broadcaster.wizard_step_2_title')} isActive={currentStep === 2} isComplete={currentStep > 2} />
+            <div className={`flex-grow h-0.5 mt-5 transition-colors duration-300 ${currentStep > 2 ? 'bg-whatsapp-green' : 'bg-dark-border'}`} />
+            <StepIndicator step={3} title={t('broadcaster.wizard_step_3_title')} isActive={currentStep === 3} isComplete={false} />
         </div>
-        <div className="space-y-8">
-            <Card>
-                <h3 className="text-xl font-semibold text-dark-text-primary">{t('broadcaster.audience_title')}</h3>
-                <div 
-                    className="mt-4 border-2 border-dashed border-dark-border rounded-lg p-6 text-center cursor-pointer hover:border-whatsapp-green"
-                    onClick={() => fileInputRef.current?.click()}
-                >
-                    <i className="fa-solid fa-file-csv text-4xl text-dark-text-secondary"></i>
-                    <p className="mt-2 text-dark-text-secondary">
-                        {fileName ? fileName : t('broadcaster.audience_upload')}
-                    </p>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        className="hidden"
-                        accept=".csv"
-                    />
-                </div>
-                <p className="text-xs text-dark-text-secondary mt-2">{t('broadcaster.audience_hint')}</p>
-            </Card>
-             <Card>
-                <h3 className="text-xl font-semibold text-dark-text-primary">{t('broadcaster.scheduling_title')}</h3>
-                <div className="flex items-center justify-between mt-4">
-                    <label htmlFor="schedule-toggle" className="text-dark-text-secondary">{t('broadcaster.schedule_toggle')}</label>
-                    <label htmlFor="schedule-toggle" className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="schedule-toggle" className="sr-only peer" checked={isScheduled} onChange={() => setIsScheduled(!isScheduled)} />
-                        <div className="w-11 h-6 bg-dark-border rounded-full peer peer-focus:ring-4 peer-focus:ring-whatsapp-green/30 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] rtl:peer-checked:after:-translate-x-full rtl:after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-whatsapp-green"></div>
-                    </label>
-                </div>
-                {isScheduled && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} className="p-2 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary" />
-                        <input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} className="p-2 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary" />
+        
+        {/* Step Content */}
+        <div className="min-h-[400px] flex flex-col justify-center">
+            {currentStep === 1 && (
+                <div className="space-y-4 animate-toast-in-right">
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-xl font-semibold text-dark-text-primary">{t('broadcaster.compose_title')}</h3>
+                        <Button variant="secondary" size="sm" onClick={openAiModal} icon={<i className="fa-solid fa-wand-magic-sparkles"></i>}>
+                            {t('broadcaster.ai_assistant_button')}
+                        </Button>
                     </div>
-                )}
-                 <Button 
-                    onClick={handleSendBroadcast} 
-                    className="w-full mt-6"
-                    icon={<i className={`fa-solid ${isScheduled ? 'fa-clock' : 'fa-paper-plane'}`}></i>}
-                >
-                    {isScheduled ? t('broadcaster.schedule_broadcast') : t('broadcaster.send_now')}
-                </Button>
-            </Card>
+                    <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        rows={10}
+                        className={`w-full p-3 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary placeholder:text-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-whatsapp-green ${textAlignmentClass}`}
+                        placeholder={t('broadcaster.compose_placeholder')}
+                    ></textarea>
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                            <label htmlFor="template-select" className="sr-only">{t('broadcaster.load_template')}</label>
+                            <select id="template-select" onChange={handleLoadTemplate} className={`p-2 border border-dark-border rounded-lg bg-dark-input text-dark-text-primary text-sm ${textAlignmentClass}`}>
+                                <option value="">{t('broadcaster.load_template')}</option>
+                                {templates.filter(t => t.approvalStatus === 'Approved').map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                            </select>
+                        </div>
+                        <Button variant="secondary" size="sm" onClick={handleSaveTemplate} icon={<i className="fa-solid fa-save"></i>}>
+                            {t('broadcaster.save_template')}
+                        </Button>
+                    </div>
+                </div>
+            )}
+            {currentStep === 2 && (
+                 <div className="space-y-4 animate-toast-in-right">
+                    <h3 className="text-xl font-semibold text-dark-text-primary">{t('broadcaster.audience_title')}</h3>
+                    <div 
+                        className="mt-4 border-2 border-dashed border-dark-border rounded-lg p-12 text-center cursor-pointer hover:border-whatsapp-green transition-colors"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        <i className="fa-solid fa-file-csv text-5xl text-dark-text-secondary"></i>
+                        <p className="mt-4 text-dark-text-secondary">
+                            {fileName ? fileName : t('broadcaster.audience_upload')}
+                        </p>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept=".csv"
+                        />
+                    </div>
+                    <p className="text-xs text-dark-text-secondary mt-2 text-center">{t('broadcaster.audience_hint')}</p>
+                </div>
+            )}
+            {currentStep === 3 && (
+                 <div className="space-y-6 animate-toast-in-right">
+                    <h3 className="text-xl font-semibold text-dark-text-primary">{t('broadcaster.review_title')}</h3>
+                    <div className="space-y-4">
+                        <div className="bg-dark-input p-4 rounded-lg border border-dark-border">
+                            <h4 className="font-semibold text-dark-text-secondary mb-2">{t('broadcaster.review_message_preview')}</h4>
+                            <p className="text-sm text-dark-text-primary italic truncate">"{message || t('broadcaster.review_no_message')}"</p>
+                        </div>
+                         <div className="bg-dark-input p-4 rounded-lg border border-dark-border">
+                            <h4 className="font-semibold text-dark-text-secondary mb-2">{t('broadcaster.review_audience')}</h4>
+                            <p className="text-sm text-dark-text-primary font-mono">{fileName || t('broadcaster.review_no_audience')}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-semibold text-dark-text-primary mt-6">{t('broadcaster.scheduling_title')}</h3>
+                        <div className="flex items-center justify-between mt-4 bg-dark-input p-4 rounded-lg border border-dark-border">
+                            <label htmlFor="schedule-toggle" className="text-dark-text-primary font-medium">{t('broadcaster.schedule_toggle')}</label>
+                            <label htmlFor="schedule-toggle" className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="schedule-toggle" className="sr-only peer" checked={isScheduled} onChange={() => setIsScheduled(!isScheduled)} />
+                                <div className="w-11 h-6 bg-dark-border rounded-full peer peer-focus:ring-4 peer-focus:ring-whatsapp-green/30 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] rtl:peer-checked:after:-translate-x-full rtl:after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-whatsapp-green"></div>
+                            </label>
+                        </div>
+                        {isScheduled && (
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                                <input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} className="p-2 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary" />
+                                <input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} className="p-2 bg-dark-input border border-dark-border rounded-lg text-dark-text-primary" />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
-      </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between items-center mt-8 border-t border-dark-border pt-6">
+            <div>
+                {currentStep > 1 && (
+                    <Button variant="secondary" onClick={prevStep} icon={<i className={`fa-solid ${dir === 'rtl' ? 'fa-arrow-right' : 'fa-arrow-left'}`}></i>}>
+                        {t('broadcaster.back_button')}
+                    </Button>
+                )}
+            </div>
+             <div>
+                {currentStep === 1 && (
+                    <Button onClick={nextStep} disabled={!message} icon={<i className={`fa-solid ${dir === 'rtl' ? 'fa-arrow-left' : 'fa-arrow-right'}`}></i>}>
+                        {t('broadcaster.next_button', { step_name: t('broadcaster.wizard_step_2_title') })}
+                    </Button>
+                )}
+                {currentStep === 2 && (
+                        <Button onClick={nextStep} disabled={!fileName} icon={<i className={`fa-solid ${dir === 'rtl' ? 'fa-arrow-left' : 'fa-arrow-right'}`}></i>}>
+                        {t('broadcaster.next_button', { step_name: t('broadcaster.wizard_step_3_title') })}
+                    </Button>
+                )}
+                {currentStep === 3 && (
+                    <Button 
+                        onClick={handleSendBroadcast} 
+                        icon={<i className={`fa-solid ${isScheduled ? 'fa-clock' : 'fa-paper-plane'}`}></i>}
+                    >
+                        {isScheduled ? t('broadcaster.schedule_broadcast') : t('broadcaster.send_now')}
+                    </Button>
+                )}
+            </div>
+        </div>
+
+      </Card>
       
       {isTemplateModalOpen && (
          <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center">

@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { forwardRef } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -6,16 +7,17 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-const Card: React.FC<CardProps> = ({ children, className, ...props }) => {
+const Card = forwardRef<HTMLDivElement, CardProps>(({ children, className, ...props }, ref) => {
   const { dir } = useLanguage();
   return (
     <div 
+      ref={ref}
       className={`bg-dark-card rounded-xl shadow-lg border border-dark-border p-6 hover:shadow-2xl transition-shadow duration-300 ${dir === 'rtl' ? 'text-right' : ''} ${className}`}
       {...props}
     >
       {children}
     </div>
   );
-};
+});
 
-export default Card;
+export default React.memo(Card);

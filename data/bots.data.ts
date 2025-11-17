@@ -1,3 +1,4 @@
+
 import { AutoResponderBot } from '../types';
 
 export const initialBots: AutoResponderBot[] = [

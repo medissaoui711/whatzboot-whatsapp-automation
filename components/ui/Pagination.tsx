@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import Button from './Button';
@@ -42,4 +43,4 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
     );
 };
 
-export default Pagination;
+export default React.memo(Pagination);

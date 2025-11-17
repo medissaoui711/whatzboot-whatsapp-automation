@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useUser } from './contexts/UserContext';
@@ -12,8 +12,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen, openChangelog, onSearchSubmit }) => {
   const { t, dir } = useLanguage();
-  const { user } = useUser();
+  const { user, logout } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +23,19 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen, openChang
       onSearchSubmit(searchQuery);
     }
   };
+  
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-dark-card border-b border-dark-border flex-shrink-0">
@@ -32,7 +47,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen, openChang
             <i className={`fa-solid ${isSidebarOpen ? 'fa-xmark' : 'fa-bars'} text-xl transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'rotate-90' : ''}`}></i>
         </button>
         <form onSubmit={handleSearchSubmit} className="relative">
+          <label htmlFor="header-search" className="sr-only">{t('header.searchPlaceholder')}</label>
           <input
+            id="header-search"
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -54,25 +71,36 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen, openChang
         <button className="flex text-dark-text-secondary hover:text-whatsapp-teal-green focus:outline-none">
           <i className="fa-solid fa-bell text-xl"></i>
         </button>
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           {user && (
-            <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <img
-                className="w-10 h-10 rounded-full object-cover"
-                src={user.avatar}
-                alt="User avatar"
-              />
-              <div className={dir === 'rtl' ? 'text-right' : 'text-left'}>
-                  <h3 className="text-dark-text-primary font-semibold flex items-center">
-                    {user.name}
-                    {user.betaTester && (
-                        <span className="ms-2 text-xs font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 px-2 py-0.5 rounded-md">
-                            {t('beta_program.badge_text')}
-                        </span>
-                    )}
-                  </h3>
-                  <p className="text-sm text-dark-text-secondary">{t(`roles.${user.role}`)}</p>
-              </div>
+            <div>
+              <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center space-x-3 rtl:space-x-reverse focus:outline-none">
+                <img
+                  className="w-10 h-10 rounded-full object-cover"
+                  src={user.avatar}
+                  alt="User avatar"
+                />
+                <div className={`${dir === 'rtl' ? 'text-right' : 'text-left'} hidden sm:block`}>
+                    <h3 className="text-dark-text-primary font-semibold flex items-center">
+                      {user.name}
+                      {user.betaTester && (
+                          <span className="ms-2 text-xs font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 px-2 py-0.5 rounded-md">
+                              {t('beta_program.badge_text')}
+                          </span>
+                      )}
+                    </h3>
+                    <p className="text-sm text-dark-text-secondary">{t(`roles.${user.role}`)}</p>
+                </div>
+              </button>
+
+              {isDropdownOpen && (
+                <div className={`absolute ${dir === 'rtl' ? 'left-0' : 'right-0'} mt-2 w-48 bg-dark-card border border-dark-border rounded-md shadow-lg z-20`}>
+                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-2 text-sm text-dark-text-primary hover:bg-white/5">{t('header.profile')}</Link>
+                    <button onClick={() => { logout(); setIsDropdownOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">
+                      {t('header.logout')}
+                    </button>
+                </div>
+              )}
             </div>
           )}
         </div>
