@@ -72,7 +72,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="min-h-screen bg-dark-bg">
         <Sidebar isSidebarOpen={isSidebarOpen} />
         <div 
-          className={`flex flex-col min-h-screen transition-[margin] duration-500 ease-in-out ${
+          className={`flex flex-col min-h-screen transition-all duration-500 ease-in-out ${
             isSidebarOpen 
               ? (dir === 'rtl' ? 'mr-64' : 'ml-64') 
               : (dir === 'rtl' ? 'mr-0' : 'ml-0')

@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen }) => {
     : `fixed top-0 left-0 z-30 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`;
   
   const borderClass = dir === 'rtl' ? 'border-l' : 'border-r';
-  const navLinkBorderClass = dir === 'rtl' ? 'border-l-4' : 'border-r-4';
+  const navLinkBorderClass = dir === 'rtl' ? 'border-r-4' : 'border-l-4';
   const textAlignmentClass = dir === 'rtl' ? 'text-right' : 'text-left';
 
   return (
