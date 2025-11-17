@@ -17,23 +17,16 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "components",
-    "data",
-    "hooks",
-    "i18n",
-    "pages",
-    "services",
-    "App.tsx",
-    "index.tsx",
-    "types.ts",
-    "constants.tsx"
+    "**/*.ts",
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules",
     "dist",
     "vite.config.ts",
     "tailwind.config.js",
-    "postcss.config.js"
+    "postcss.config.js",
+    "tsconfig.node.json"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

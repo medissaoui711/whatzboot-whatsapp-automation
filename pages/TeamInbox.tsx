@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useUser } from '../components/contexts/UserContext';
@@ -11,23 +12,49 @@ import { initialContacts } from '../data/contacts.data';
 import { initialTeam } from '../data/team.data';
 import { initialConversations } from '../data/conversations.data';
 
+const ConversationListSkeleton: React.FC = () => (
+    <div className="animate-pulse">
+        {[...Array(6)].map((_, i) => (
+            <div key={i} className="p-4 flex space-x-3 items-center border-b border-dark-border">
+                <div className="w-12 h-12 rounded-full bg-dark-border/50"></div>
+                <div className="flex-grow space-y-2">
+                    <div className="h-4 bg-dark-border/50 rounded w-3/4"></div>
+                    <div className="h-3 bg-dark-border/50 rounded w-1/2"></div>
+                </div>
+            </div>
+        ))}
+    </div>
+);
 
 const TeamInbox: React.FC = () => {
     const { t, dir } = useLanguage();
     const { user } = useUser();
     const { addToast } = useToast();
     
-    const [conversations, setConversations] = useState<Conversation[]>(initialConversations);
+    const [conversations, setConversations] = useState<Conversation[]>([]);
     const [contacts] = useState<Contact[]>(initialContacts);
     const [team] = useState<User[]>(initialTeam);
-    const [selectedConvId, setSelectedConvId] = useState<string | null>('conv1');
+    const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
     const [filter, setFilter] = useState<'all' | 'me' | 'unassigned'>('all');
     const [replyMessage, setReplyMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
+
+    useEffect(() => {
+        setIsLoading(true);
+        // Simulate fetching data from a backend API
+        setTimeout(() => {
+            setConversations(initialConversations);
+            if (initialConversations.length > 0) {
+                setSelectedConvId(initialConversations[0].id);
+            }
+            setIsLoading(false);
+        }, 1500);
+    }, []);
 
     useEffect(scrollToBottom, [selectedConvId, conversations]);
 
@@ -106,25 +133,29 @@ const TeamInbox: React.FC = () => {
                         </div>
                     </div>
                     <div className="overflow-y-auto">
-                        {filteredConversations.length > 0 ? filteredConversations.map(conv => {
-                            const contact = contacts.find(c => c.id === conv.contactId);
-                            return (
-                                <div key={conv.id} onClick={() => handleSelectConversation(conv.id)}
-                                    className={`p-4 cursor-pointer border-b border-dark-border flex space-x-3 rtl:space-x-reverse items-center ${selectedConvId === conv.id ? 'bg-whatsapp-green/10' : 'hover:bg-white/5'}`}>
-                                    <div className="relative">
-                                        <img src={`https://picsum.photos/seed/${contact?.id}/100`} alt={contact?.name} className="w-12 h-12 rounded-full" />
-                                        {conv.unreadCount > 0 && <span className="absolute top-0 right-0 block h-4 w-4 transform -translate-y-1/2 translate-x-1/2 rounded-full ring-2 ring-dark-card bg-red-500 text-white text-xs flex items-center justify-center">{conv.unreadCount}</span>}
-                                    </div>
-                                    <div className="flex-grow overflow-hidden">
-                                        <div className="flex justify-between items-center">
-                                            <h4 className="font-semibold text-dark-text-primary truncate">{contact?.name}</h4>
-                                            <span className="text-xs text-dark-text-secondary flex-shrink-0">{conv.lastMessageTimestamp}</span>
+                        {isLoading ? (
+                            <ConversationListSkeleton />
+                        ) : filteredConversations.length > 0 ? (
+                            filteredConversations.map(conv => {
+                                const contact = contacts.find(c => c.id === conv.contactId);
+                                return (
+                                    <div key={conv.id} onClick={() => handleSelectConversation(conv.id)}
+                                        className={`p-4 cursor-pointer border-b border-dark-border flex space-x-3 rtl:space-x-reverse items-center ${selectedConvId === conv.id ? 'bg-whatsapp-green/10' : 'hover:bg-white/5'}`}>
+                                        <div className="relative">
+                                            <img src={`https://picsum.photos/seed/${contact?.id}/100`} alt={contact?.name} className="w-12 h-12 rounded-full" />
+                                            {conv.unreadCount > 0 && <span className="absolute top-0 right-0 block h-4 w-4 transform -translate-y-1/2 translate-x-1/2 rounded-full ring-2 ring-dark-card bg-red-500 text-white text-xs flex items-center justify-center">{conv.unreadCount}</span>}
                                         </div>
-                                        <p className="text-sm text-dark-text-secondary truncate">{conv.lastMessage}</p>
+                                        <div className="flex-grow overflow-hidden">
+                                            <div className="flex justify-between items-center">
+                                                <h4 className="font-semibold text-dark-text-primary truncate">{contact?.name}</h4>
+                                                <span className="text-xs text-dark-text-secondary flex-shrink-0">{conv.lastMessageTimestamp}</span>
+                                            </div>
+                                            <p className="text-sm text-dark-text-secondary truncate">{conv.lastMessage}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            )
-                        }) : (
+                                )
+                            })
+                        ) : (
                              <div className="p-4 text-center text-dark-text-secondary">{t('common.no_results')}</div>
                         )}
                     </div>
