@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# WhatzBoot - WhatsApp Automation Dashboard
 
-# Run and deploy your AI Studio app
+![WhatzBoot Logo](frontend/public/brand/logo-dark-bg.svg)
 
-This contains everything you need to run your app locally.
+مرحبًا بك في WhatzBoot، الحل الشامل لأتمتة رسائل WhatsApp، وإدارة المجموعات، والتفاعل مع جهات الاتصال بكفاءة. يتميز المشروع بلوحة تحكم متكاملة تشمل الرد التلقائي، وإرسال الرسائل الجماعية، وإدارة الأعضاء، والفلترة الذكية، وكل ذلك معزز بالذكاء الاصطناعي لتواصل أكثر ذكاءً.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1hLtmqB5PGqb_PlOAdlNDl_tLHhvMROZu
+## نظرة عامة على البنية
 
-## Run Locally
+المشروع مقسم إلى جزأين رئيسيين:
 
-**Prerequisites:**  Node.js
+-   **`/frontend`**: تطبيق الواجهة الأمامية مبني باستخدام **Next.js** و **TypeScript**، ويوفر واجهة مستخدم تفاعلية وسريعة.
+-   **`/backend`**: الخادم الخلفي مبني باستخدام **FastAPI (Python)**، ويوفر واجهة برمجة تطبيقات (API) آمنة وقابلة للتطوير.
 
+## البدء
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+لبدء تشغيل المشروع بالكامل، ستحتاج إلى إعداد وتشغيل كل من الواجهة الأمامية والخلفية بشكل منفصل.
+
+### 1. إعداد الواجهة الأمامية (Frontend)
+
+للحصول على إرشادات مفصلة حول كيفية إعداد وتشغيل تطبيق Next.js، يرجى الرجوع إلى الملف التمهيدي الخاص به:
+
+➡️ **[إرشادات الواجهة الأمامية (frontend/README.md)](./frontend/README.md)**
+
+### 2. إعداد الخادم الخلفي (Backend)
+
+للحصول على إرشادات مفصلة حول كيفية إعداد وتشغيل خادم FastAPI، يرجى الرجوع إلى الملف التمهيدي الخاص به:
+
+➡️ **[إرشادات الخادم الخلفي (backend/README.md)](./backend/README.md)**
+
+## المساهمة
+
+نرحب بالمساهمات! لا تتردد في فتح `issue` أو تقديم `pull request`.
+
+## الترخيص
+
+هذا المشروع مرخص بموجب ترخيص MIT.
