@@ -23,9 +23,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
+  // Fix: Removed the Readonly<> utility type which can sometimes cause issues with type inference for props.
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" dir="ltr">
       <head>
