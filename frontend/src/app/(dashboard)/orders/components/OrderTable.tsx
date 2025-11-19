@@ -9,22 +9,42 @@ type OrderTableProps = {
   orders: Order[];
 };
 
-const statusColors: Record<OrderStatus, string> = {
-  Pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  Confirmed: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  Preparing: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
-  Completed: 'bg-green-500/20 text-green-400 border-green-500/30',
-  Cancelled: 'bg-red-500/20 text-red-400 border-red-500/30',
+// Define explicit styles for both the badge background/text and the dot color.
+// Tailwind needs full class names to be present in the source code to generate CSS.
+const statusStyles: Record<OrderStatus, { badge: string; dot: string }> = {
+  Pending: {
+    badge: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    dot: 'bg-yellow-400'
+  },
+  Confirmed: {
+    badge: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    dot: 'bg-blue-400'
+  },
+  Preparing: {
+    badge: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+    dot: 'bg-indigo-400'
+  },
+  Completed: {
+    badge: 'bg-green-500/20 text-green-400 border-green-500/30',
+    dot: 'bg-green-400'
+  },
+  Cancelled: {
+    badge: 'bg-red-500/20 text-red-400 border-red-500/30',
+    dot: 'bg-red-400'
+  },
 };
 
-const StatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => (
-  <span
-    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColors[status]}`}
-  >
-    <span className={`mr-1.5 h-2 w-2 rounded-full ${statusColors[status].replace(/text-(.*)-400/, 'bg-$1-400').replace('/20', '')}`}></span>
-    {status}
-  </span>
-);
+const StatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
+  const styles = statusStyles[status];
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${styles.badge}`}
+    >
+      <span className={`mr-1.5 h-2 w-2 rounded-full ${styles.dot}`}></span>
+      {status}
+    </span>
+  );
+};
 
 const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
   return (
