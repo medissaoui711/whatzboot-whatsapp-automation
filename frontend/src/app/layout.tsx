@@ -1,3 +1,5 @@
+// Fix: Import React to resolve the 'React.ReactNode' type which was causing a compilation error.
+import React from 'react';
 import type { Metadata } from 'next';
 import { Tajawal } from 'next/font/google';
 import AppProviders from './providers';
