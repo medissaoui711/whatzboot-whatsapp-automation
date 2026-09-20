@@ -1,16 +1,18 @@
 import { NavLink } from '@/types';
 
 export const mainNavLinks: NavLink[] = [
-  { href: '/', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
-  { href: '/team-inbox', label: 'Team Inbox', icon: 'fas fa-inbox' },
-  { href: '/send-message', label: 'Send Message', icon: 'fas fa-paper-plane' },
-  { href: '/orders', label: 'Orders', icon: 'fas fa-receipt' },
-  { href: '/automations', label: 'Automations', icon: 'fas fa-cogs' },
-  { href: '/contact-manager', label: 'Contact Manager', icon: 'fas fa-address-book' },
-  { href: '/analytics', label: 'Analytics', icon: 'fas fa-chart-line' },
-  { href: '/settings', label: 'Settings', icon: 'fas fa-cog' },
+  { href: '/', label: 'لوحة التحكم والمبيعات', icon: 'fas fa-chart-pie' },
+  { href: '/voice-agent', label: 'الوكيل الصوتي الذكي (Voice AI)', icon: 'fas fa-headset', badge: 'صوتي 🎙️', badgeColor: 'amber' },
+  { href: '/groups', label: 'إدارة مجموعات واتساب', icon: 'fas fa-users-rectangle', badge: 'جديد', badgeColor: 'green' },
+  { href: '/team-inbox', label: 'المحادثات والمبيعات المباشرة', icon: 'fas fa-comments', badge: '3', badgeColor: 'green' },
+  { href: '/orders', label: 'الطلبات وسلات الشراء', icon: 'fas fa-shopping-bag', badge: 'جديد', badgeColor: 'amber' },
+  { href: '/send-message', label: 'حملات الترويج (Broadcaster)', icon: 'fas fa-bullhorn' },
+  { href: '/automations', label: 'الكتالوج والرد الذكي', icon: 'fas fa-robot' },
+  { href: '/contact-manager', label: 'سجل العملاء وعملاء VIP', icon: 'fas fa-users' },
+  { href: '/analytics', label: 'تقارير الإيرادات والنمو', icon: 'fas fa-chart-line' },
+  { href: '/settings', label: 'ربط واتساب وإعدادات المتجر', icon: 'fas fa-cog' },
 ];
 
 export const toolsNavLinks: NavLink[] = [
-    { href: '/tools', label: 'All Tools', icon: 'fas fa-tools' },
+  { href: '/tools', label: 'روابط وباركود واتساب السريع', icon: 'fas fa-qrcode' },
 ];

@@ -31,6 +31,8 @@ export interface NavLink {
   href: string;
   label: string;
   icon: string;
+  badge?: string;
+  badgeColor?: 'green' | 'amber' | 'blue';
 }
 
 // Chart data type

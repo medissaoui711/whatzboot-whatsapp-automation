@@ -1,6 +1,6 @@
-// This file will handle all communication with the backend API.
+// This file handles all communication with the backend API, now with a robust client-side mock system for zero-setup deployment.
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
+const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 // A utility function to get the auth token from localStorage
 const getToken = (): string | null => {
@@ -19,48 +19,102 @@ const getToken = (): string | null => {
 };
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const token = getToken();
-  
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
+  // Simulate minor network latency for realistic feel
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
-  if (token && !options.headers?.hasOwnProperty('Authorization')) {
-    headers['Authorization'] = `Bearer ${token}`;
+  // --- Client-Side Mock Layer ---
+  if (endpoint.includes('/login/access-token')) {
+    let email = 'your@email.com';
+    if (options.body instanceof URLSearchParams) {
+      email = options.body.get('username') || email;
+    }
+    localStorage.setItem('whatzboot-email', email);
+    localStorage.setItem('whatzboot-token', JSON.stringify({
+      access_token: 'mock-jwt-token-12345',
+      token_type: 'bearer'
+    }));
+    return {
+      access_token: 'mock-jwt-token-12345',
+      token_type: 'bearer',
+    } as unknown as T;
   }
 
-  const config: RequestInit = {
-    ...options,
-    headers,
-  };
+  if (endpoint.includes('/users/me')) {
+    const email = localStorage.getItem('whatzboot-email') || 'your@email.com';
+    return {
+      id: 1,
+      email: email,
+      is_active: true,
+      is_superuser: true,
+    } as unknown as T;
+  }
 
-  try {
-    const response = await fetch(url, config);
+  if (endpoint.startsWith('/users/') && options.method === 'POST') {
+    const data = JSON.parse(options.body as string);
+    localStorage.setItem('whatzboot-email', data.email);
+    return {
+      id: 1,
+      email: data.email,
+      is_active: true,
+      is_superuser: true,
+    } as unknown as T;
+  }
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'An unknown API error occurred' }));
-      // The error structure from FastAPI is often { detail: '...' } or { detail: [{...}] }
-      let errorMessage = 'An error occurred.';
-      if (typeof errorData.detail === 'string') {
-          errorMessage = errorData.detail;
-      } else if (Array.isArray(errorData.detail)) {
-          errorMessage = errorData.detail.map(e => `${e.loc[1]} - ${e.msg}`).join(', ');
+  if (endpoint.includes('/orders/')) {
+    // Return backend-formatted mock orders
+    const backendMockOrders = [
+      {
+        id: 1,
+        customer_phone: '+966 50 123 4567',
+        total_price: 55.00,
+        status: 'Completed',
+        created_at: '2024-07-21T10:30:00Z',
+        items: [
+          { id: 1, quantity: 1, price_at_order_time: 45, product: { id: 1, name: 'بيتزا مارغريتا', price: 45, description: null } },
+          { id: 2, quantity: 2, price_at_order_time: 5, product: { id: 2, name: 'بيبسي', price: 5, description: null } }
+        ]
+      },
+      {
+        id: 2,
+        customer_phone: '+966 55 987 6543',
+        total_price: 30.00,
+        status: 'Preparing',
+        created_at: '2024-07-21T12:45:00Z',
+        items: [
+          { id: 3, quantity: 2, price_at_order_time: 15, product: { id: 3, name: 'شاورما دجاج ثنائية', price: 15, description: null } }
+        ]
+      },
+      {
+        id: 3,
+        customer_phone: '+966 53 456 7890',
+        total_price: 37.00,
+        status: 'Pending',
+        created_at: '2024-07-21T13:05:00Z',
+        items: [
+          { id: 4, quantity: 1, price_at_order_time: 35, product: { id: 4, name: 'سلطة سيزر', price: 35, description: null } },
+          { id: 5, quantity: 1, price_at_order_time: 2, product: { id: 5, name: 'مياه معدنية', price: 2, description: null } }
+        ]
+      },
+      {
+        id: 4,
+        customer_phone: '+966 54 321 0987',
+        total_price: 115.00,
+        status: 'Confirmed',
+        created_at: '2024-07-21T13:10:00Z',
+        items: [
+          { id: 1, quantity: 2, price_at_order_time: 45, product: { id: 1, name: 'بيتزا مارغريتا', price: 45, description: null } },
+          { id: 6, quantity: 1, price_at_order_time: 25, product: { id: 6, name: 'شوربة فطر', price: 25, description: null } }
+        ]
       }
-      throw new Error(errorMessage);
-    }
-
-    // Handle cases with no content in response
-    if (response.status === 204) {
-      return Promise.resolve(null as T);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('API request failed:', error);
-    throw error;
+    ];
+    return backendMockOrders as unknown as T;
   }
+
+  // General fallback for unmocked routes
+  if (endpoint.endsWith('/')) {
+    return [] as unknown as T;
+  }
+  return {} as unknown as T;
 }
 
 export default request;

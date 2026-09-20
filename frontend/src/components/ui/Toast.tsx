@@ -34,7 +34,10 @@ const Toast: React.FC<{ toast: ToastMessage }> = ({ toast }) => {
       setTimeout(() => removeToast(toast.id), 500);
   };
 
-  const animationClass = isExiting ? 'animate-toast-out' : `animate-toast-in-${toast.position === 'top-left' || toast.position === 'bottom-left' ? 'left' : 'right'}`;
+  // Fix: Use full class strings instead of dynamic interpolation for Tailwind to detect them
+  const animationClass = isExiting 
+    ? 'animate-toast-out' 
+    : (toast.position === 'top-left' || toast.position === 'bottom-left' ? 'animate-toast-in-left' : 'animate-toast-in-right');
 
   return (
     <div

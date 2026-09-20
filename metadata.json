@@ -1,5 +1,10 @@
 {
-  "name": "Copy of WhatzBoot - WhatsApp Automation Dashboard",
-  "description": "A comprehensive dashboard to automate WhatsApp messaging, manage groups, and engage contacts efficiently. Features include an auto-responder, message broadcaster, member manager, and smart filtering, all integrated with AI for intelligent communication.",
-  "requestFramePermissions": []
+  "name": "WhatzBoot - WhatsApp Automation Dashboard",
+  "description": "منصة متكاملة لأتمتة رسائل واتساب، صندوق الوارد الموحد لفريق العمل، الحملات الإعلانية الجماعية، إدارة جهات الاتصال والطلبات، والردود الذكية، والوكيل الصوتي الذكي وإدارة المجموعات.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

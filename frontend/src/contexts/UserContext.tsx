@@ -38,6 +38,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.removeItem('whatzboot-token');
         setUser(null);
       }
+    } else {
+      // Default demo session for immediate live preview
+      const defaultToken = { access_token: 'mock-jwt-token-12345', token_type: 'bearer' };
+      localStorage.setItem('whatzboot-token', JSON.stringify(defaultToken));
+      localStorage.setItem('whatzboot-email', 'admin@whatzboot.com');
+      setUser({
+        id: 1,
+        email: 'admin@whatzboot.com',
+        name: 'عبدالله السعيد (مدير النظام)',
+        is_active: true,
+        is_superuser: true,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+      });
     }
     setLoading(false);
   }, []);

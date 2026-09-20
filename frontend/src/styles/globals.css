@@ -1,22 +1,54 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../../tailwind.config.ts";
 
-/* Custom scrollbar for a more integrated dark theme look */
+@theme {
+  --color-whatsapp-green: #10b981;
+  --color-whatsapp-green-hover: #059669;
+  --color-whatsapp-teal-green: #0f766e;
+  --color-whatsapp-light-green: #d1fae5;
+  --color-whatsapp-blue: #0ea5e9;
+  --color-whatsapp-gold: #f59e0b;
+  --color-commerce-gold: #d97706;
+  --color-dark-bg: #0e0e11;
+  --color-dark-card: #16161a;
+  --color-dark-surface-elevated: #1f1f25;
+  --color-dark-border: #2a2a32;
+  --color-dark-border-subtle: #202028;
+  --color-dark-text-primary: #f4f4f6;
+  --color-dark-text-secondary: #9d9da8;
+  --color-dark-text-muted: #6b6b78;
+  --color-dark-input: #121216;
+  --font-tajawal: 'Tajawal', sans-serif;
+}
+
+/* Custom scrollbar for Commerce Studio */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #161B22; /* dark-card */
+  background: #0e0e11;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #30363d; /* dark-border */
+  background: #2a2a32;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b949e; /* dark-text-secondary */
+  background: #474754;
 }
+
+/* Accessibility: Support prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
